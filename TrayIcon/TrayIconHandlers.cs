@@ -39,10 +39,13 @@ namespace NullSoftware.ToolKit
             var self = (INotifyCollectionChanged)this;
             self.CollectionChanged += (sender, args) =>
             {
-                foreach (TrayIcon trayIcon in args.NewItems)
+                if (args.NewItems != null)
                 {
-                    if (DesignerProperties.GetIsInDesignMode(trayIcon))
-                        trayIcon.Dispose();
+                    foreach (TrayIcon trayIcon in args.NewItems)
+                    {
+                        if (DesignerProperties.GetIsInDesignMode(trayIcon))
+                            trayIcon.Dispose();
+                    }
                 }
             };
         }

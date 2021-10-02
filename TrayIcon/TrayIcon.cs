@@ -130,7 +130,7 @@ namespace NullSoftware.ToolKit
             // properties initialization
             NotifyIcon = new NotifyIcon()
             {
-                Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
+                Icon = Icon.ExtractAssociatedIcon(AppDomain.CurrentDomain.FriendlyName),
                 Visible = Visibility == Visibility.Visible,
                 Text = Title
             };
@@ -237,6 +237,9 @@ namespace NullSoftware.ToolKit
         {
             TrayIcon trayIcon = (TrayIcon)d;
 
+            if (trayIcon.NotifyIcon == null)
+                return;
+
             trayIcon.NotifyIcon.Text = (string)e.NewValue;
         }
 
@@ -244,6 +247,9 @@ namespace NullSoftware.ToolKit
             DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrayIcon trayIcon = (TrayIcon)d;
+
+            if (trayIcon.NotifyIcon == null)
+                return;
 
             if (trayIcon.IconSource != null)
                 trayIcon.NotifyIcon.Icon = new Icon(trayIcon.IconSource, 16, 16);
@@ -253,6 +259,9 @@ namespace NullSoftware.ToolKit
             DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrayIcon trayIcon = (TrayIcon)d;
+
+            if (trayIcon.NotifyIcon == null)
+                return;
 
             trayIcon.Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -265,6 +274,9 @@ namespace NullSoftware.ToolKit
            DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrayIcon trayIcon = (TrayIcon)d;
+
+            if (trayIcon.NotifyIcon == null)
+                return;
 
             trayIcon.NotifyIcon.Visible = (Visibility)e.NewValue == Visibility.Visible;
         }

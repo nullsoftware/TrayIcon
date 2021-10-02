@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <icon:TrayIconHandlers.TrayIcons>
-        <icon:TrayIcon Title="Among Us"/>
+        <icon:TrayIcon Title="Amogus"/>
     </icon:TrayIconHandlers.TrayIcons>
     
     <Grid>
