@@ -202,7 +202,7 @@ namespace NullSoftware.ToolKit
             // needed to change menu item header dynamically
             DependencyPropertyDescriptor.FromProperty(
                 WPFMenuItem.HeaderProperty, 
-                typeof(MenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Text = GetHeader(item)));
+                typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Text = GetHeader(item)));
 
             if (item.Items.Count != 0)
             {

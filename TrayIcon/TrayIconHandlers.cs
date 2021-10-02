@@ -43,6 +43,8 @@ namespace NullSoftware.ToolKit
                 {
                     foreach (TrayIcon trayIcon in args.NewItems)
                     {
+                        trayIcon.DataContext = owner.DataContext;
+
                         if (DesignerProperties.GetIsInDesignMode(trayIcon))
                             trayIcon.Dispose();
                     }

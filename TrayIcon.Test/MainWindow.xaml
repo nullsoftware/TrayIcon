@@ -4,14 +4,33 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TrayIcon.Test"
+        xmlns:vm="clr-namespace:TrayIcon.Test.ViewModels"
         xmlns:icon="clr-namespace:NullSoftware.ToolKit;assembly=TrayIcon"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        TextOptions.TextFormattingMode="Display"
+        SnapsToDevicePixels="True"
+        UseLayoutRounding="True">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
     <icon:TrayIconHandlers.TrayIcons>
-        <icon:TrayIcon Title="My Application"/>
+        <icon:TrayIcon Title="My Application">
+            <icon:TrayIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="_Silent Mode" IsCheckable="True" IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Separator/>
+                    <MenuItem Header="E_xit" Command="{Binding CloseCommand}"/>
+                </ContextMenu>
+            </icon:TrayIcon.ContextMenu>
+        </icon:TrayIcon>
     </icon:TrayIconHandlers.TrayIcons>
     
     <Grid>
-        
+        <CheckBox VerticalAlignment="Top"
+                  HorizontalAlignment="Left"
+                  Margin="10, 20"
+                  IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  Content="Silent Mode"/>
     </Grid>
 </Window>
