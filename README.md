@@ -22,7 +22,7 @@ using NullSoftware.ToolKit;
 Then you can place tray icon inside your window, or keep it in variable/property.
 
 Full Example:
-```XAML:TrayIcon/TrayIcon.Test/MainWindow.xaml
+```XAML:TrayIcon.Test/MainWindow.xaml
 
 ```
 -----------------------------
