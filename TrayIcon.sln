@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrayIcon", "TrayIcon\TrayIcon.csproj", "{9D6EC3C5-2973-4DED-9409-1C31F067B56F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrayIcon.Test", "TrayIcon.Test\TrayIcon.Test.csproj", "{51214194-D6C5-49A4-B5F1-BFFBE92604C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrayIcon.Example", "TrayIcon.Test\TrayIcon.Example.csproj", "{51214194-D6C5-49A4-B5F1-BFFBE92604C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

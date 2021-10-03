@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace TrayIcon.Test
+namespace TrayIcon.Example
 {
     /// <summary>
     /// Basic implementation of implementing a windows input command.

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace TrayIcon.Test
+namespace TrayIcon.Example
 {
     /// <summary>
     /// Interaction logic for App.xaml
