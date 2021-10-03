@@ -15,10 +15,13 @@
         <vm:MainViewModel/>
     </Window.DataContext>
     <icon:TrayIconHandlers.TrayIcons>
-        <icon:TrayIcon Title="My Application">
+        <icon:TrayIcon Title="My Application" 
+                       NotificationServiceMemberPath="NotificationService">
             <icon:TrayIcon.ContextMenu>
+                <!--This context menu will be converted to System.Windows.Forms.ContextMenu-->
                 <ContextMenu>
                     <MenuItem Header="_Silent Mode" IsCheckable="True" IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <MenuItem Header="_Say Hello" Command="{Binding SayHelloCommand}"/>
                     <Separator/>
                     <MenuItem Header="E_xit" Command="{Binding CloseCommand}"/>
                 </ContextMenu>

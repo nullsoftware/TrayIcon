@@ -63,15 +63,12 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata());
 
-        private static readonly DependencyPropertyKey NotificationServicePropertyKey
-            = DependencyProperty.RegisterReadOnly(
-                nameof(NotificationService),
-                typeof(INotificationService), 
-                typeof(TrayIcon),
-                new FrameworkPropertyMetadata());
-
-        public static readonly DependencyProperty NotificationServiceProperty
-            = NotificationServicePropertyKey.DependencyProperty;
+        public static readonly DependencyProperty NotificationServiceMemberPathProperty =
+           DependencyProperty.Register(
+               nameof(NotificationServiceMemberPath),
+               typeof(string),
+               typeof(TrayIcon),
+               new FrameworkPropertyMetadata(OnNotificationServiceMemberPathChanged));
 
         #endregion
 
@@ -107,10 +104,10 @@ namespace NullSoftware.ToolKit
             set { SetValue(DoubleClickCommandProperty, value); }
         }
 
-        public INotificationService NotificationService
+        public string NotificationServiceMemberPath
         {
-            get { return (INotificationService)GetValue(NotificationServiceProperty); }
-            protected set { SetValue(NotificationServicePropertyKey, value); }
+            get { return (string)GetValue(NotificationServiceMemberPathProperty); }
+            set { SetValue(NotificationServiceMemberPathProperty, value); }
         }
 
         protected NotifyIcon NotifyIcon { get; private set; }
@@ -134,7 +131,6 @@ namespace NullSoftware.ToolKit
                 Visible = Visibility == Visibility.Visible,
                 Text = Title
             };
-            NotificationService = this;
 
             // event subscription
             NotifyIcon.Disposed += (sender, e) => NotifyIcon = null;
@@ -279,6 +275,27 @@ namespace NullSoftware.ToolKit
                 return;
 
             trayIcon.NotifyIcon.Visible = (Visibility)e.NewValue == Visibility.Visible;
+        }
+
+        private static void OnNotificationServiceMemberPathChanged(
+           DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            TrayIcon trayIcon = (TrayIcon)d;
+
+            string memberPath = (string)e.NewValue;
+
+            if (!string.IsNullOrEmpty(memberPath))
+            {
+                trayIcon.Dispatcher.BeginInvoke(
+                    new Action<object, string, INotificationService>(InjectServiceToSource),
+                    DispatcherPriority.DataBind, 
+                    trayIcon.DataContext, memberPath, trayIcon);
+            }
+        }
+
+        private static void InjectServiceToSource(object source, string memberPath, INotificationService service)
+        {
+            source.GetType().GetProperty(memberPath).SetValue(source, service);
         }
 
         #endregion
