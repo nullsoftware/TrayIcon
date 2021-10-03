@@ -17,6 +17,7 @@
     <PackageTags>TrayIcon NotifyIcon WPF Tray WindowsTray</PackageTags>
     <PackageProjectUrl>https://github.com/nullsoftware/TrayIcon</PackageProjectUrl>
     <PackageReleaseNotes>Added multi-version support.</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
