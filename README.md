@@ -22,8 +22,56 @@ using NullSoftware.ToolKit;
 Then you can place tray icon inside your window, or keep it in variable/property.
 
 Full Example:
-```XAML:TrayIcon.Test/MainWindow.xaml
+```XAML
+<Window x:Class="TrayIcon.Test.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TrayIcon.Test"
+        xmlns:vm="clr-namespace:TrayIcon.Test.ViewModels"
+        xmlns:icon="clr-namespace:NullSoftware.ToolKit;assembly=TrayIcon"
+        mc:Ignorable="d"
+        Title="MainWindow" 
+        Height="450" Width="800"
+        Icon="MainIcon.ico">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+    
+    <!--Here you can place your icons-->
+    <icon:TrayIconHandlers.TrayIcons>
+        <icon:TrayIcon Title="My Application" 
+                       IconSource="{Binding Source='MainIcon.ico', Converter={StaticResource PathToResourceStreamConverter}}"
+                       DoubleClickCommand="{Binding MinimazeCommand}"
+                       NotificationServiceMemberPath="NotificationService">
+            <icon:TrayIcon.ContextMenu>
+                <!--This context menu will be converted to System.Windows.Forms.ContextMenu-->
+                <ContextMenu>
+                    <MenuItem Header="_Silent Mode" IsCheckable="True" IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Separator/>
+                    <MenuItem Header="E_xit" Command="{Binding CloseCommand}"/>
+                </ContextMenu>
+            </icon:TrayIcon.ContextMenu>
+        </icon:TrayIcon>
+    </icon:TrayIconHandlers.TrayIcons>
 
+    <Grid>
+        <StackPanel VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    Margin="10, 20"
+                    Orientation="Horizontal">
+            <CheckBox VerticalAlignment="Center"
+                      IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      Content="Silent Mode"/>
+            <Button Margin="20, 0, 0, 0"
+                    Padding="10, 3"
+                    MinWidth="86"
+                    Command="{Binding SayHelloCommand}"
+                    Content="Notify"/>
+        </StackPanel>
+    </Grid>
+</Window>
 ```
 -----------------------------
 
