@@ -18,6 +18,7 @@
     <PackageProjectUrl>https://github.com/nullsoftware/TrayIcon</PackageProjectUrl>
     <PackageReleaseNotes>Added multi-version support.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 </Project>
