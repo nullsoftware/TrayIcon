@@ -8,9 +8,9 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("TrayIcon")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Library that allows use Tray Icon in WPF Application.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Null Software")]
 [assembly: AssemblyProduct("TrayIcon")]
 [assembly: AssemblyCopyright("Copyright © NullSoftware, 2021.")]
 [assembly: AssemblyTrademark("")]
