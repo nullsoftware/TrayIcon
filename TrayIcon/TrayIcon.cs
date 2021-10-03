@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -158,6 +159,30 @@ namespace NullSoftware.ToolKit
             NotifyIcon?.Dispose();
         }
 
+        protected void InjectServiceToSource()
+        {
+            DataContext.GetType().GetProperty(NotificationServiceMemberPath).SetValue(DataContext, this);
+        }
+
+        protected bool TryInjectServiceToSource()
+        {
+            try
+            {
+                InjectServiceToSource();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (DataContext != null)
+                    Debug.WriteLine($"Failed to bind service to member '{NotificationServiceMemberPath}' in '{DataContext.GetType()}'. Exception: {ex}");
+                else
+                    Debug.WriteLine($"Failed to bind service to member '{NotificationServiceMemberPath}'. Exception: {ex}");
+
+                return false;
+            }
+        }
+
         private ContextMenu GenerateContextMenu(WPFContextMenu original)
         {
             if (original == null || original.Items.Count == 0)
@@ -287,15 +312,9 @@ namespace NullSoftware.ToolKit
             if (!string.IsNullOrEmpty(memberPath))
             {
                 trayIcon.Dispatcher.BeginInvoke(
-                    new Action<object, string, INotificationService>(InjectServiceToSource),
-                    DispatcherPriority.DataBind, 
-                    trayIcon.DataContext, memberPath, trayIcon);
+                    new Func<bool>(trayIcon.TryInjectServiceToSource),
+                    DispatcherPriority.DataBind);
             }
-        }
-
-        private static void InjectServiceToSource(object source, string memberPath, INotificationService service)
-        {
-            source.GetType().GetProperty(memberPath).SetValue(source, service);
         }
 
         #endregion
