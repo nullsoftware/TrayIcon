@@ -32,17 +32,21 @@ Full Example:
         xmlns:vm="clr-namespace:TrayIcon.Test.ViewModels"
         xmlns:icon="clr-namespace:NullSoftware.ToolKit;assembly=TrayIcon"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-        TextOptions.TextFormattingMode="Display"
-        SnapsToDevicePixels="True"
-        UseLayoutRounding="True">
+        Title="MainWindow" 
+        Height="450" Width="800"
+        Icon="MainIcon.ico">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
+    
+    <!--Here you can place your icons-->
     <icon:TrayIconHandlers.TrayIcons>
-        <icon:TrayIcon Title="My Application">
-            <!--This context menu will be converted to System.Windows.Forms.ContextMenu-->
+        <icon:TrayIcon Title="My Application" 
+                       IconSource="{Binding Source='MainIcon.ico', Converter={StaticResource PathToResourceStreamConverter}}"
+                       DoubleClickCommand="{Binding MinimazeCommand}"
+                       NotificationServiceMemberPath="NotificationService">
             <icon:TrayIcon.ContextMenu>
+                <!--This context menu will be converted to System.Windows.Forms.ContextMenu-->
                 <ContextMenu>
                     <MenuItem Header="_Silent Mode" IsCheckable="True" IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Separator/>
@@ -51,13 +55,21 @@ Full Example:
             </icon:TrayIcon.ContextMenu>
         </icon:TrayIcon>
     </icon:TrayIconHandlers.TrayIcons>
-    
+
     <Grid>
-        <CheckBox VerticalAlignment="Top"
-                  HorizontalAlignment="Left"
-                  Margin="10, 20"
-                  IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                  Content="Silent Mode"/>
+        <StackPanel VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    Margin="10, 20"
+                    Orientation="Horizontal">
+            <CheckBox VerticalAlignment="Center"
+                      IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      Content="Silent Mode"/>
+            <Button Margin="20, 0, 0, 0"
+                    Padding="10, 3"
+                    MinWidth="86"
+                    Command="{Binding SayHelloCommand}"
+                    Content="Notify"/>
+        </StackPanel>
     </Grid>
 </Window>
 ```
