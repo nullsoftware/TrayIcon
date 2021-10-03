@@ -1,5 +1,5 @@
 # TrayIcon
-Library that allows use Tray Icon for WPF Application. 
+Library that allows use Tray Icon in WPF Application. 
 Ported from Windows Forms. Has wrapper for WPF ContexMenu (which converts it to Windows Forms ContextMenu). This is needed for good performance, and compatibility.
 This library targets all MVVM requirements:
 - it has bindable properties
