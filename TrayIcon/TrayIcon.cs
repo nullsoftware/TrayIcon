@@ -64,6 +64,13 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata());
 
+        public static readonly DependencyProperty BalloonTipClickCommandProperty =
+            DependencyProperty.Register(
+                nameof(BalloonTipClickCommand),
+                typeof(ICommand),
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata());
+
         public static readonly DependencyProperty NotificationServiceMemberPathProperty =
            DependencyProperty.Register(
                nameof(NotificationServiceMemberPath),
@@ -105,6 +112,12 @@ namespace NullSoftware.ToolKit
             set { SetValue(DoubleClickCommandProperty, value); }
         }
 
+        public ICommand BalloonTipClickCommand
+        {
+            get { return (ICommand)GetValue(BalloonTipClickCommandProperty); }
+            set { SetValue(BalloonTipClickCommandProperty, value); }
+        }
+
         public string NotificationServiceMemberPath
         {
             get { return (string)GetValue(NotificationServiceMemberPathProperty); }
@@ -137,6 +150,7 @@ namespace NullSoftware.ToolKit
             NotifyIcon.Disposed += (sender, e) => NotifyIcon = null;
             NotifyIcon.Click += (sender, e) => ClickCommand?.Execute(null);
             NotifyIcon.DoubleClick += (sender, e) => DoubleClickCommand?.Execute(null);
+            NotifyIcon.BalloonTipClicked += (sender, e) => BalloonTipClickCommand?.Execute(null);
             WPFApplication.Current.Exit += (sender, e) => NotifyIcon?.Dispose();
         }
 
@@ -144,16 +158,19 @@ namespace NullSoftware.ToolKit
 
         #region Methods
 
+        /// <inheritdoc/>
         public void Notify(string title, string text)
         {
             NotifyIcon.ShowBalloonTip(ShowTimeout, title, text, ToolTipIcon.None);
         }
 
+        /// <inheritdoc/>
         public void Notify(string title, string text, NotificationType notificationType)
         {
-            NotifyIcon.ShowBalloonTip(ShowTimeout, title, text, notificationType.ToToolTipIcon());
+            NotifyIcon.ShowBalloonTip(ShowTimeout, title, text, (ToolTipIcon)notificationType);
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             NotifyIcon?.Dispose();
@@ -161,7 +178,7 @@ namespace NullSoftware.ToolKit
 
         protected void InjectServiceToSource()
         {
-            DataContext.GetType().GetProperty(NotificationServiceMemberPath).SetValue(DataContext, this);
+            DataContext.GetType().GetProperty(NotificationServiceMemberPath, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(DataContext, this);
         }
 
         protected bool TryInjectServiceToSource()

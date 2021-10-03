@@ -13,6 +13,8 @@
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
+
+    <!--Here you can place your icons-->
     <icon:TrayIconHandlers.TrayIcons>
         <icon:TrayIcon Title="My Application" 
                        IconSource="{Binding Source='MainIcon.ico', Converter={StaticResource PathToResourceStreamConverter}}"
@@ -28,7 +30,7 @@
             </icon:TrayIcon.ContextMenu>
         </icon:TrayIcon>
     </icon:TrayIconHandlers.TrayIcons>
-    
+
     <Grid>
         <StackPanel VerticalAlignment="Top"
                     HorizontalAlignment="Left"
