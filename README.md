@@ -5,7 +5,7 @@ This library targets all MVVM requirements:
 - it has bindable properties
 - it has interface with notify methods
 
-Getting started.
+## Getting started.
 
 First you need to include namespace to your code or markup.
 
