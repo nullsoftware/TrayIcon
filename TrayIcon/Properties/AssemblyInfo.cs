@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TrayIcon")]
-[assembly: AssemblyCopyright("Copyright ©  2021")]
+[assembly: AssemblyCopyright("Copyright © NullSoftware, 2021.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
