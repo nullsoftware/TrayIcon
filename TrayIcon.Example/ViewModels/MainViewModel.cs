@@ -26,7 +26,7 @@ namespace TrayIcon.Example.ViewModels
         public MainViewModel()
         {
             MinimazeCommand = new RelayCommand(() => App.Current.MainWindow.WindowState = System.Windows.WindowState.Minimized);
-            SayHelloCommand = new RelayCommand(() => NotificationService.Notify("Simple Title", "Simple Text..."));
+            SayHelloCommand = new RelayCommand(() => NotificationService.Notify("Greetings", "Hello World!"));
             CloseCommand = new RelayCommand(App.Current.MainWindow.Close);
         }
     }
