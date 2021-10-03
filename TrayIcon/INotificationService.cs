@@ -1,7 +1,7 @@
 ﻿namespace NullSoftware.ToolKit
 {
     /// <summary>
-    /// Provides the ability to notify user using balloon tip with specified message.
+    /// Provides the ability to notify user using balloon tip.
     /// </summary>
     public interface INotificationService
     {
