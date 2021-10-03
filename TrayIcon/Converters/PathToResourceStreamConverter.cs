@@ -15,7 +15,9 @@ namespace NullSoftware.ToolKit.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Uri uri = new Uri((string)value);
+            string format = parameter as string ?? "pack://application:,,,/{0}";
+
+            Uri uri = new Uri(string.Format(format, value));
 
             return Application.GetResourceStream(uri).Stream;
         }
