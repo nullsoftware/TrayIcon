@@ -6,7 +6,7 @@
 	<UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>NullSoftware.ToolKit</RootNamespace>
     <AssemblyName>TrayIcon</AssemblyName>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Null Software</Authors>
     <Company>Null Software</Company>
     <Product>Tray Icon</Product>
@@ -16,9 +16,13 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>TrayIcon NotifyIcon WPF Tray WindowsTray</PackageTags>
     <PackageProjectUrl>https://github.com/nullsoftware/TrayIcon</PackageProjectUrl>
-    <PackageReleaseNotes>Added multi-version support.</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.0|AnyCPU'">
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>
