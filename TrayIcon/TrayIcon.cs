@@ -178,6 +178,11 @@ namespace NullSoftware.ToolKit
             WPFApplication.Current.Exit += (sender, e) => NotifyIcon?.Dispose();
         }
 
+        ~TrayIcon()
+        {
+            Dispose();
+        }
+
         #endregion
 
         #region Methods
