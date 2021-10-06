@@ -83,18 +83,33 @@ namespace NullSoftware.ToolKit
 
         #region Properties
 
+        /// <summary>
+        /// Gets or sets the time period, in milliseconds, the balloon tip should display.
+        /// This parameter is deprecated as of Windows Vista.
+        /// Notification display times are now based on system accessibility settings.
+        /// </summary>
         public ushort ShowTimeout
         {
             get { return (ushort)GetValue(ShowTimeoutProperty); }
             set { SetValue(ShowTimeoutProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or sets the ToolTip text displayed
+        /// when the mouse pointer rests on a notification area icon.
+        /// </summary>
+        /// <exception cref="ArgumentException">
+        /// ToolTip text is more than 63 characters long.
+        /// </exception>
         public string Title
         {
             get { return (string)GetValue(TitleProperty); }
             set { SetValue(TitleProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or sets the current icon.
+        /// </summary>
         public Stream IconSource
         {
             get { return (Stream)GetValue(IconSourceProperty); }
@@ -119,6 +134,14 @@ namespace NullSoftware.ToolKit
             set { SetValue(BalloonTipClickCommandProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or sets path to <see cref="INotificationService"/> property
+        /// to bind there current instance.
+        /// </summary>
+        /// <remarks>
+        /// Using current property it is possible to inject
+        /// <see cref="INotificationService"/> to view model.
+        /// </remarks>
         public string NotificationServiceMemberPath
         {
             get { return (string)GetValue(NotificationServiceMemberPathProperty); }
@@ -179,7 +202,9 @@ namespace NullSoftware.ToolKit
 
         protected void InjectServiceToSource()
         {
-            DataContext.GetType().GetProperty(NotificationServiceMemberPath, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(DataContext, this);
+            DataContext.GetType()
+                .GetProperty(NotificationServiceMemberPath, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .SetValue(DataContext, this);
         }
 
         protected bool TryInjectServiceToSource()
