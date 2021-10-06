@@ -337,7 +337,7 @@ namespace NullSoftware.ToolKit
             {
                 trayIcon.NotifyIcon.ContextMenu = trayIcon.GenerateContextMenu((WPFContextMenu)e.NewValue);
             }),
-            DispatcherPriority.Background);
+            DispatcherPriority.DataBind);
         }
 
         private static void OnVisibilityChanged(
