@@ -6,17 +6,18 @@
 	<UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>NullSoftware.ToolKit</RootNamespace>
     <AssemblyName>TrayIcon</AssemblyName>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>Null Software</Authors>
     <Company>Null Software</Company>
     <Product>Tray Icon</Product>
-    <Description>Library that allows use Tray Icon in WPF Application.</Description>
+    <Description></Description>
     <Copyright>Copyright © Null Software, 2021.</Copyright>
     <RepositoryUrl>https://github.com/nullsoftware/TrayIcon</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>TrayIcon NotifyIcon WPF Tray WindowsTray</PackageTags>
+    <PackageTags>TrayIcon NotifyIcon WPF Tray WindowsTray Taskbar Notification TaskbarNotification Balloon</PackageTags>
     <PackageProjectUrl>https://github.com/nullsoftware/TrayIcon</PackageProjectUrl>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>Improved DataContext binding. 
+Added documentation.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
