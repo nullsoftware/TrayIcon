@@ -19,6 +19,7 @@ using System.Windows.Resources;
 using System.Windows.Threading;
 using ItemCollection = System.Windows.Controls.ItemCollection;
 using WPFApplication = System.Windows.Application;
+using WPFBinding = System.Windows.Data.Binding;
 using WPFContextMenu = System.Windows.Controls.ContextMenu;
 using WPFMenuItem = System.Windows.Controls.MenuItem;
 using WPFSeparator = System.Windows.Controls.Separator;
@@ -205,8 +206,9 @@ namespace NullSoftware.ToolKit
             if (original == null || original.Items.Count == 0)
                 return null;
 
-            if (original.DataContext == null)
-                original.DataContext = DataContext;
+            original.SetBinding(
+                FrameworkElement.DataContextProperty,
+                new WPFBinding(nameof(DataContext)) { Source = this });
 
             return new ContextMenu(GenerateMenuItems(original.Items));
         }

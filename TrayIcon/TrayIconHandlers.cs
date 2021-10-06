@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 
 namespace NullSoftware.ToolKit
 {
@@ -36,8 +37,6 @@ namespace NullSoftware.ToolKit
         {
             _owner = owner;
 
-            _owner.DataContextChanged += OnDataContextChanged;
-
             var self = (INotifyCollectionChanged)this;
             self.CollectionChanged += (sender, args) =>
             {
@@ -45,24 +44,15 @@ namespace NullSoftware.ToolKit
                 {
                     foreach (TrayIcon trayIcon in args.NewItems)
                     {
-                        trayIcon.DataContext = _owner.DataContext;
+                        trayIcon.SetBinding(
+                            FrameworkElement.DataContextProperty, 
+                            new Binding(nameof(_owner.DataContext)) { Source = _owner });
 
                         if (DesignerProperties.GetIsInDesignMode(trayIcon))
                             trayIcon.Dispose();
                     }
                 }
             };
-        }
-
-        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            foreach (TrayIcon trayIcon in this)
-            {
-                trayIcon.DataContext = _owner.DataContext;
-
-                if (DesignerProperties.GetIsInDesignMode(trayIcon))
-                    trayIcon.Dispose();
-            }
         }
 
         /// <inheritdoc />
