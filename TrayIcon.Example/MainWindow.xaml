@@ -16,7 +16,7 @@
 
     <!--Here you can place your icons-->
     <icon:TrayIconHandlers.TrayIcons>
-        <icon:TrayIcon Title="My Application" 
+        <icon:TrayIcon Title="My Application"
                        IconSource="{Binding Source='MainIcon.ico', Converter={StaticResource PathToResourceStreamConverter}}"
                        DoubleClickCommand="{Binding MinimazeCommand}"
                        NotificationServiceMemberPath="NotificationService">
