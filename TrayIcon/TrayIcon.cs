@@ -225,7 +225,7 @@ namespace NullSoftware.ToolKit
                 if (DataContext != null)
                     Debug.WriteLine($"Failed to bind service to member '{NotificationServiceMemberPath}' in '{DataContext.GetType()}'. Exception: {ex}");
                 else
-                    Debug.WriteLine($"Failed to bind service to member '{NotificationServiceMemberPath}'. Exception: {ex}");
+                    Debug.WriteLine($"Failed to bind service to member '{NotificationServiceMemberPath}' (DataContext is empty). Exception: {ex}");
 
                 return false;
             }
