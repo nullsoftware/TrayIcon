@@ -231,6 +231,77 @@ namespace NullSoftware.ToolKit
             }
         }
 
+#if (NETCOREAPP3_1_OR_GREATER)
+        private ContextMenuStrip GenerateContextMenuStrip(WPFContextMenu original)
+        {
+            if (original == null || original.Items.Count == 0)
+                return null;
+
+            original.SetBinding(
+                FrameworkElement.DataContextProperty,
+                new WPFBinding(nameof(DataContext)) { Source = this });
+
+            ContextMenuStrip result = new ContextMenuStrip();
+
+            result.Items.AddRange(GenerateToolStripMenuItems(original.Items));
+
+            return result;
+        }
+
+        private ToolStripItem[] GenerateToolStripMenuItems(ItemCollection original)
+        {
+            List<ToolStripItem> result = new List<ToolStripItem>();
+
+            foreach (FrameworkElement item in original)
+            {
+                switch (item)
+                {
+                    case WPFMenuItem menuItem:
+                        result.Add(LinkMenuItemStrip(menuItem));
+                        break;
+                    case WPFSeparator separator:
+                        result.Add(new ToolStripSeparator());
+                        break;
+                    default:
+                        throw new NotSupportedException($"Type '{item.GetType()}' not supported.");
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        private ToolStripMenuItem LinkMenuItemStrip(WPFMenuItem item)
+        {
+            ToolStripMenuItem result = new ToolStripMenuItem(GetHeader(item));
+
+            // needed to change menu item header dynamically
+            DependencyPropertyDescriptor.FromProperty(
+                WPFMenuItem.HeaderProperty,
+                typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Text = GetHeader(item)));
+
+            if (item.Items.Count != 0)
+            {
+                result.DropDownItems.AddRange(GenerateToolStripMenuItems(item.Items));
+
+                return result;
+            }
+
+            if (item.IsCheckable)
+            {
+                item.AddHandler(WPFMenuItem.CheckedEvent, new RoutedEventHandler((sender, e) => result.Checked = true));
+                item.AddHandler(WPFMenuItem.UncheckedEvent, new RoutedEventHandler((sender, e) => result.Checked = false));
+                
+                result.Checked = item.IsChecked;
+            }
+
+            MenuItemAutomationPeer peer = new MenuItemAutomationPeer(item);
+            IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+
+            result.Click += (sender, e) => invokeProv.Invoke();
+
+            return result;
+        }
+#else
         private ContextMenu GenerateContextMenu(WPFContextMenu original)
         {
             if (original == null || original.Items.Count == 0)
@@ -271,7 +342,7 @@ namespace NullSoftware.ToolKit
 
             // needed to change menu item header dynamically
             DependencyPropertyDescriptor.FromProperty(
-                WPFMenuItem.HeaderProperty, 
+                WPFMenuItem.HeaderProperty,
                 typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Text = GetHeader(item)));
 
             if (item.Items.Count != 0)
@@ -296,6 +367,7 @@ namespace NullSoftware.ToolKit
 
             return result;
         }
+#endif
 
         private string GetHeader(WPFMenuItem item)
         {
@@ -335,7 +407,11 @@ namespace NullSoftware.ToolKit
 
             trayIcon.Dispatcher.BeginInvoke(new Action(() =>
             {
+#if (NETCOREAPP3_1_OR_GREATER)
+                trayIcon.NotifyIcon.ContextMenuStrip = trayIcon.GenerateContextMenuStrip((WPFContextMenu)e.NewValue);
+#else
                 trayIcon.NotifyIcon.ContextMenu = trayIcon.GenerateContextMenu((WPFContextMenu)e.NewValue);
+#endif
             }),
             DispatcherPriority.DataBind);
         }
@@ -366,6 +442,6 @@ namespace NullSoftware.ToolKit
             }
         }
 
-        #endregion
+#endregion
     }
 }
