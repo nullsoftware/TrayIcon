@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TrayIcon.Example"
         xmlns:vm="clr-namespace:TrayIcon.Example.ViewModels"
-        xmlns:icon="clr-namespace:NullSoftware.ToolKit;assembly=TrayIcon"
+        xmlns:icon="https://github.com/nullsoftware/TrayIcon"
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="450" Width="800"
