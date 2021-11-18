@@ -165,7 +165,7 @@ namespace NullSoftware.ToolKit
             // properties initialization
             NotifyIcon = new NotifyIcon()
             {
-                Icon = Icon.ExtractAssociatedIcon(AppDomain.CurrentDomain.FriendlyName),
+                Icon = Icon.ExtractAssociatedIcon(Assembly.GetEntryAssembly().Location),
                 Visible = Visibility == Visibility.Visible,
                 Text = Title
             };
