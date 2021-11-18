@@ -11,7 +11,7 @@ First you need to include namespace to your code or markup.
 
 For XAML it can look like:
 ```XAML
-<Window xmlns:icon="clr-namespace:NullSoftware.ToolKit;assembly=TrayIcon" />
+<Window xmlns:icon="https://github.com/nullsoftware/TrayIcon" />
 ```
 
 And for C#:
@@ -30,7 +30,7 @@ Full Example:
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TrayIcon.Test"
         xmlns:vm="clr-namespace:TrayIcon.Test.ViewModels"
-        xmlns:icon="clr-namespace:NullSoftware.ToolKit;assembly=TrayIcon"
+        xmlns:icon="https://github.com/nullsoftware/TrayIcon"
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="450" Width="800"
