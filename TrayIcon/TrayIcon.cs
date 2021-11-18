@@ -13,7 +13,6 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Resources;
@@ -24,12 +23,6 @@ using WPFBinding = System.Windows.Data.Binding;
 using WPFContextMenu = System.Windows.Controls.ContextMenu;
 using WPFMenuItem = System.Windows.Controls.MenuItem;
 using WPFSeparator = System.Windows.Controls.Separator;
-
-[assembly: XmlnsPrefix("https://github.com/nullsoftware/TrayIcon", "toolkit")]
-[assembly: XmlnsDefinition("https://github.com/nullsoftware/TrayIcon", "NullSoftware.ToolKit")]
-
-[assembly: XmlnsPrefix("https://github.com/nullsoftware/TrayIcon/Converters", "converters")]
-[assembly: XmlnsDefinition("https://github.com/nullsoftware/TrayIcon/Converters", "NullSoftware.ToolKit.Converters")]
 
 namespace NullSoftware.ToolKit
 {
