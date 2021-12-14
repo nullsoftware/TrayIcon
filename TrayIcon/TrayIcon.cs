@@ -26,6 +26,9 @@ using WPFSeparator = System.Windows.Controls.Separator;
 
 namespace NullSoftware.ToolKit
 {
+    /// <summary>
+    /// Specifies a component that creates an icon in the notification area.
+    /// </summary>
     public class TrayIcon : FrameworkElement, INotificationService, IDisposable
     {
         #region Dependency Properties Registration
@@ -148,6 +151,9 @@ namespace NullSoftware.ToolKit
             set { SetValue(NotificationServiceMemberPathProperty, value); }
         }
 
+        /// <summary>
+        /// Wrapped NotifyIcon.
+        /// </summary>
         protected NotifyIcon NotifyIcon { get; private set; }
 
         #endregion
@@ -205,6 +211,9 @@ namespace NullSoftware.ToolKit
             NotifyIcon?.Dispose();
         }
 
+        /// <summary>
+        /// Injects <see cref="INotificationService"/> to DataContext by <see cref="NotificationServiceMemberPath"/>.
+        /// </summary>
         protected void InjectServiceToSource()
         {
             DataContext.GetType()
@@ -212,6 +221,10 @@ namespace NullSoftware.ToolKit
                 .SetValue(DataContext, this);
         }
 
+        /// <summary>
+        /// Tries to inject <see cref="INotificationService"/> to DataContext by <see cref="NotificationServiceMemberPath"/>.
+        /// </summary>
+        /// <returns>true if injection was successful; otherwise, false.</returns>
         protected bool TryInjectServiceToSource()
         {
             try
