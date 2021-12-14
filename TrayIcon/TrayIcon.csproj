@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-	<TargetFrameworks>netcoreapp3.0;net45;net451;net452;net46;net461;net462;net471;net472;net48</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;net45;net451;net452;net46;net461;net462;net471;net472;net48</TargetFrameworks>
     <UseWPF>true</UseWPF>
-	<UseWindowsForms>true</UseWindowsForms>
+    <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>NullSoftware.ToolKit</RootNamespace>
     <AssemblyName>TrayIcon</AssemblyName>
     <Version>1.0.4.2</Version>
