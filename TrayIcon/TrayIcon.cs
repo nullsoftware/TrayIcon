@@ -166,6 +166,9 @@ namespace NullSoftware.ToolKit
             ContextMenuProperty.OverrideMetadata(typeof(TrayIcon), new FrameworkPropertyMetadata(OnContextMenuChanged));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TrayIcon"/> class.
+        /// </summary>
         public TrayIcon()
         {
             // properties initialization
@@ -184,6 +187,9 @@ namespace NullSoftware.ToolKit
             WPFApplication.Current.Exit += (sender, e) => NotifyIcon?.Dispose();
         }
 
+        /// <summary>
+        /// Disposes inner NotifyIcon.
+        /// </summary>
         ~TrayIcon()
         {
             Dispose();
