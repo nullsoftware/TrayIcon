@@ -50,7 +50,7 @@ namespace NullSoftware.ToolKit
         public static readonly DependencyProperty IconSourceProperty =
             DependencyProperty.Register(
                 nameof(IconSource), 
-                typeof(Stream), 
+                typeof(object), 
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata(OnIconSourceChanged));
 
@@ -113,9 +113,9 @@ namespace NullSoftware.ToolKit
         /// <summary>
         /// Gets or sets the current icon.
         /// </summary>
-        public Stream IconSource
+        public object IconSource
         {
-            get { return (Stream)GetValue(IconSourceProperty); }
+            get { return (object)GetValue(IconSourceProperty); }
             set { SetValue(IconSourceProperty, value); }
         }
 
@@ -344,7 +344,19 @@ namespace NullSoftware.ToolKit
                 return;
 
             if (trayIcon.IconSource != null)
-                trayIcon.NotifyIcon.Icon = new Icon(trayIcon.IconSource, 16, 16);
+            {
+                switch (trayIcon.IconSource)
+                {
+                    case Stream stream:
+                        trayIcon.NotifyIcon.Icon = new Icon(stream, 16, 16);
+                        break;
+                    case BitmapImage bitmapImg:
+                        trayIcon.NotifyIcon.Icon = new Icon(bitmapImg.StreamSource, 16, 16);
+                        break;
+                    default:
+                        throw new NotSupportedException("Icon Source supports only Stream or BitmapImage.");
+                }
+            }
         }
 
         private static void OnContextMenuChanged(
