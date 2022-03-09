@@ -293,6 +293,9 @@ namespace NullSoftware.ToolKit
                 WPFMenuItem.HeaderProperty, 
                 typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Text = GetHeader(item)));
 
+            result.Enabled = item.IsEnabled;
+            item.IsEnabledChanged += (sender, e) => result.Enabled = (bool)e.NewValue;
+
             if (item.Items.Count != 0)
             {
                 result.MenuItems.AddRange(GenerateMenuItems(item.Items));
