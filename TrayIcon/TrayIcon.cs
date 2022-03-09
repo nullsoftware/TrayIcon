@@ -24,6 +24,8 @@ using WPFContextMenu = System.Windows.Controls.ContextMenu;
 using WPFMenuItem = System.Windows.Controls.MenuItem;
 using WPFSeparator = System.Windows.Controls.Separator;
 
+#pragma warning disable CS0612 // Type or member is obsolete
+
 namespace NullSoftware.ToolKit
 {
     /// <summary>
@@ -432,4 +434,7 @@ namespace NullSoftware.ToolKit
 
         #endregion
     }
+
+#pragma warning restore CS0612 // Type or member is obsolete
+
 }
