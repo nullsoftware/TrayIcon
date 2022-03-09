@@ -50,7 +50,7 @@ namespace NullSoftware.ToolKit
         public static readonly DependencyProperty IconSourceProperty =
             DependencyProperty.Register(
                 nameof(IconSource), 
-                typeof(object), 
+                typeof(ImageSource), 
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata(OnIconSourceChanged));
 
@@ -91,6 +91,7 @@ namespace NullSoftware.ToolKit
         /// This parameter is deprecated as of Windows Vista.
         /// Notification display times are now based on system accessibility settings.
         /// </summary>
+        [Obsolete]
         public ushort ShowTimeout
         {
             get { return (ushort)GetValue(ShowTimeoutProperty); }
@@ -104,6 +105,7 @@ namespace NullSoftware.ToolKit
         /// <exception cref="ArgumentException">
         /// ToolTip text is more than 63 characters long.
         /// </exception>
+        [Category("Common")]
         public string Title
         {
             get { return (string)GetValue(TitleProperty); }
@@ -113,24 +115,28 @@ namespace NullSoftware.ToolKit
         /// <summary>
         /// Gets or sets the current icon.
         /// </summary>
-        public object IconSource
+        [Category("Common")]
+        public ImageSource IconSource
         {
-            get { return (object)GetValue(IconSourceProperty); }
+            get { return (ImageSource)GetValue(IconSourceProperty); }
             set { SetValue(IconSourceProperty, value); }
         }
 
+        [Category("Common")]
         public ICommand ClickCommand
         {
             get { return (ICommand)GetValue(ClickCommandProperty); }
             set { SetValue(ClickCommandProperty, value); }
         }
 
+        [Category("Common")]
         public ICommand DoubleClickCommand
         {
             get { return (ICommand)GetValue(DoubleClickCommandProperty); }
             set { SetValue(DoubleClickCommandProperty, value); }
         }
 
+        [Category("Common")]
         public ICommand BalloonTipClickCommand
         {
             get { return (ICommand)GetValue(BalloonTipClickCommandProperty); }
@@ -145,6 +151,7 @@ namespace NullSoftware.ToolKit
         /// Using current property it is possible to inject
         /// <see cref="INotificationService"/> to view model.
         /// </remarks>
+        [Category("Common")]
         public string NotificationServiceMemberPath
         {
             get { return (string)GetValue(NotificationServiceMemberPathProperty); }
@@ -295,6 +302,8 @@ namespace NullSoftware.ToolKit
 
             result.Enabled = item.IsEnabled;
             item.IsEnabledChanged += (sender, e) => result.Enabled = (bool)e.NewValue;
+            
+            result.DefaultItem = Extensions.MenuItemExtensions.GetIsDefault(item);
 
             if (item.Items.Count != 0)
             {
@@ -347,14 +356,14 @@ namespace NullSoftware.ToolKit
             {
                 switch (trayIcon.IconSource)
                 {
-                    case Stream stream:
-                        trayIcon.NotifyIcon.Icon = new Icon(stream, 16, 16);
+                    case BitmapFrame frame:
+                        trayIcon.NotifyIcon.Icon = new Icon(WPFApplication.GetResourceStream(new Uri(frame.Decoder.ToString())).Stream, 16, 16);
                         break;
                     case BitmapImage bitmapImg:
                         trayIcon.NotifyIcon.Icon = new Icon(bitmapImg.StreamSource, 16, 16);
                         break;
                     default:
-                        throw new NotSupportedException("Icon Source supports only Stream or BitmapImage.");
+                        throw new NotSupportedException("Icon Source supports only BitmapFrame or BitmapImage.");
                 }
             }
         }
