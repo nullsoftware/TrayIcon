@@ -6,6 +6,10 @@ This library targets all MVVM requirements:
 - it has interface with notify methods
 
 ## Getting started.
+Installation ([NuGet](https://www.nuget.org/packages/TrayIcon)):
+```nuget
+Install-Package TrayIcon
+```
 
 First you need to include namespace to your code or markup.
 
