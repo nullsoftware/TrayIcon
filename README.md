@@ -10,7 +10,7 @@ Installation ([NuGet](https://www.nuget.org/packages/TrayIcon)):
 ```nuget
 Install-Package TrayIcon
 ```
-
+----
 First you need to include namespace to your code or markup.
 
 For XAML it can look like:
