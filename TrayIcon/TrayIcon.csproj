@@ -11,7 +11,7 @@
     <Company>Null Software</Company>
     <Product>Tray Icon</Product>
     <Description>Library that allows use Tray Icon in WPF Application.</Description>
-    <Copyright>Copyright © Null Software, 2021.</Copyright>
+    <Copyright>Copyright © Null Software, 2021. All rights reserved.</Copyright>
     <RepositoryUrl>https://github.com/nullsoftware/TrayIcon</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>TrayIcon NotifyIcon WPF Tray WindowsTray Taskbar Notification TaskbarNotification Balloon</PackageTags>
