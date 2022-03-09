@@ -82,6 +82,13 @@ namespace NullSoftware.ToolKit
                typeof(TrayIcon),
                new FrameworkPropertyMetadata(OnNotificationServiceMemberPathChanged));
 
+        public static readonly DependencyProperty IsDefaultProperty =
+            DependencyProperty.RegisterAttached(
+               "IsDefault",
+               typeof(bool),
+               typeof(TrayIcon),
+               new FrameworkPropertyMetadata(false));
+
         #endregion
 
         #region Properties
@@ -303,7 +310,7 @@ namespace NullSoftware.ToolKit
             result.Enabled = item.IsEnabled;
             item.IsEnabledChanged += (sender, e) => result.Enabled = (bool)e.NewValue;
             
-            result.DefaultItem = Extensions.MenuItemExtensions.GetIsDefault(item);
+            result.DefaultItem = GetIsDefault(item);
 
             if (item.Items.Count != 0)
             {
@@ -407,6 +414,16 @@ namespace NullSoftware.ToolKit
                     new Func<bool>(trayIcon.TryInjectServiceToSource),
                     DispatcherPriority.DataBind);
             }
+        }
+
+        public static void SetIsDefault(DependencyObject element, bool value)
+        {
+            element.SetValue(IsDefaultProperty, value);
+        }
+
+        public static bool GetIsDefault(DependencyObject element)
+        {
+            return (bool)element.GetValue(IsDefaultProperty);
         }
 
         #endregion

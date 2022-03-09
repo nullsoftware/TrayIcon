@@ -6,7 +6,6 @@
         xmlns:local="clr-namespace:TrayIcon.Example"
         xmlns:vm="clr-namespace:TrayIcon.Example.ViewModels"
         xmlns:icon="https://github.com/nullsoftware/TrayIcon"
-        xmlns:ext="https://github.com/nullsoftware/TrayIcon/Extensions"
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="450" Width="800"
@@ -24,7 +23,7 @@
             <icon:TrayIcon.ContextMenu>
                 <!--This context menu will be converted to System.Windows.Forms.ContextMenu-->
                 <ContextMenu>
-                    <MenuItem Header="Notify" Command="{Binding SayHelloCommand}" ext:MenuItemExtensions.IsDefault="True"/>
+                    <MenuItem Header="Notify" Command="{Binding SayHelloCommand}" icon:TrayIcon.IsDefault="True"/>
                     <Separator/>
                     <MenuItem Header="_Silent Mode" IsCheckable="True" IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Separator/>
