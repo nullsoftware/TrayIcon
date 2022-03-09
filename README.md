@@ -6,7 +6,11 @@ This library targets all MVVM requirements:
 - it has interface with notify methods
 
 ## Getting started.
-
+Installation ([NuGet](https://www.nuget.org/packages/TrayIcon)):
+```nuget
+Install-Package TrayIcon
+```
+----
 First you need to include namespace to your code or markup.
 
 For XAML it can look like:
@@ -23,13 +27,13 @@ Then you can place tray icon inside your window, or keep it in variable/property
 
 Full Example:
 ```XAML
-<Window x:Class="TrayIcon.Test.MainWindow"
+<Window x:Class="TrayIcon.Example.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TrayIcon.Test"
-        xmlns:vm="clr-namespace:TrayIcon.Test.ViewModels"
+        xmlns:local="clr-namespace:TrayIcon.Example"
+        xmlns:vm="clr-namespace:TrayIcon.Example.ViewModels"
         xmlns:icon="https://github.com/nullsoftware/TrayIcon"
         mc:Ignorable="d"
         Title="MainWindow" 
@@ -38,16 +42,18 @@ Full Example:
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
-    
+
     <!--Here you can place your icons-->
     <icon:TrayIconHandlers.TrayIcons>
-        <icon:TrayIcon Title="My Application" 
-                       IconSource="{Binding Source='MainIcon.ico', Converter={StaticResource PathToResourceStreamConverter}}"
+        <icon:TrayIcon Title="My Application"
+                       IconSource="MainIcon.ico"
                        DoubleClickCommand="{Binding MinimazeCommand}"
                        NotificationServiceMemberPath="NotificationService">
             <icon:TrayIcon.ContextMenu>
                 <!--This context menu will be converted to System.Windows.Forms.ContextMenu-->
                 <ContextMenu>
+                    <MenuItem Header="Notify" Command="{Binding SayHelloCommand}" icon:TrayIcon.IsDefault="True"/>
+                    <Separator/>
                     <MenuItem Header="_Silent Mode" IsCheckable="True" IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Separator/>
                     <MenuItem Header="E_xit" Command="{Binding CloseCommand}"/>
