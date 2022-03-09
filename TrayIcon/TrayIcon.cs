@@ -99,6 +99,7 @@ namespace NullSoftware.ToolKit
         /// Notification display times are now based on system accessibility settings.
         /// </summary>
         [Obsolete]
+        [Description("Gets or sets the time period, in milliseconds, the balloon tip should display. This parameter is deprecated as of Windows Vista.")]
         public ushort ShowTimeout
         {
             get { return (ushort)GetValue(ShowTimeoutProperty); }
@@ -113,6 +114,7 @@ namespace NullSoftware.ToolKit
         /// ToolTip text is more than 63 characters long.
         /// </exception>
         [Category("Common")]
+        [Description("Gets or sets the ToolTip text displayed when the mouse pointer rests on a notification area icon.")]
         public string Title
         {
             get { return (string)GetValue(TitleProperty); }
@@ -120,9 +122,10 @@ namespace NullSoftware.ToolKit
         }
 
         /// <summary>
-        /// Gets or sets the current icon.
+        /// Gets or sets the icon displayed in tray.
         /// </summary>
         [Category("Common")]
+        [Description("Gets or sets the icon displayed in tray.")]
         public ImageSource IconSource
         {
             get { return (ImageSource)GetValue(IconSourceProperty); }
@@ -159,6 +162,7 @@ namespace NullSoftware.ToolKit
         /// <see cref="INotificationService"/> to view model.
         /// </remarks>
         [Category("Common")]
+        [Description("Gets or sets path to INotificationService property to bind there current instance.")]
         public string NotificationServiceMemberPath
         {
             get { return (string)GetValue(NotificationServiceMemberPathProperty); }
