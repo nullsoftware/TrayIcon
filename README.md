@@ -22,9 +22,37 @@ And for C#:
 ```C#
 using NullSoftware.ToolKit;
 ```
-
+----
 Then you can place tray icon inside your window, or keep it in variable/property.
+For XAML:
+```XAML
+<icon:TrayIconHandlers.TrayIcons>
+    <icon:TrayIcon Title="My Application"
+                   IconSource="MainIcon.ico"
+                   ClickCommand="{Binding ExampleCommand}"
+                   NotificationServiceMemberPath="NotificationService"/>
+</icon:TrayIconHandlers.TrayIcons>
+```
 
+For C#:
+```C#
+TrayIcon myTrayIcon = new TrayIcon() 
+{ 
+    Title = "My Application",
+    IconSource = new BitmapImage(new Uri("pack://application:,,,/MainIcon.ico")),
+    ClickCommand = new RelayCommand(ExampleAction)
+};
+```
+----
+To show balloon you need to call `Notify` method:
+```C#
+INotificationService notifyService = myTrayIcon;
+notifyService.Notify("Greetings", "Hello World!", NotificationType.Information);
+```
+**Note:** `INotificationService` can be obtained from XAML by using `NotificationServiceMemberPath`.
+It injects `INotificationService` to specified DataContext property.
+
+----
 Full Example:
 ```XAML
 <Window x:Class="TrayIcon.Example.MainWindow"
@@ -79,6 +107,44 @@ Full Example:
     </Grid>
 </Window>
 ```
+ViewModel:
+```C#
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NullSoftware.ToolKit;
+using PropertyChanged;
+
+namespace TrayIcon.Example.ViewModels
+{
+    public class MainViewModel : ObservableObject
+    {
+        [DoNotNotify]
+        private INotificationService NotificationService { get; set; }
+
+        public bool IsSilentModeEnabled { get; set; }
+
+        [DoNotNotify]
+        public IRefreshableCommand MinimazeCommand { get; }
+
+        [DoNotNotify]
+        public IRefreshableCommand SayHelloCommand { get; }
+
+        [DoNotNotify]
+        public IRefreshableCommand CloseCommand { get; }
+
+        public MainViewModel()
+        {
+            MinimazeCommand = new RelayCommand(() => App.Current.MainWindow.WindowState = System.Windows.WindowState.Minimized);
+            SayHelloCommand = new RelayCommand(() => NotificationService.Notify("Greetings", "Hello World!"));
+            CloseCommand = new RelayCommand(App.Current.MainWindow.Close);
+        }
+    }
+}
+```
+
 -----------------------------
 
 ***In Develop***
