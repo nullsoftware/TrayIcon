@@ -110,41 +110,32 @@ Full Example:
 ViewModel:
 ```C#
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Input;
 using NullSoftware.ToolKit;
 using PropertyChanged;
 
-namespace TrayIcon.Example.ViewModels
+public class MainViewModel : ObservableObject
 {
-    public class MainViewModel : ObservableObject
+    [DoNotNotify]
+    private INotificationService NotificationService { get; set; }
+
+    public bool IsSilentModeEnabled { get; set; }
+
+    [DoNotNotify]
+    public ICommand MinimazeCommand { get; }
+
+    [DoNotNotify]
+    public ICommand SayHelloCommand { get; }
+
+    [DoNotNotify]
+    public ICommand CloseCommand { get; }
+
+    public MainViewModel()
     {
-        [DoNotNotify]
-        private INotificationService NotificationService { get; set; }
-
-        public bool IsSilentModeEnabled { get; set; }
-
-        [DoNotNotify]
-        public IRefreshableCommand MinimazeCommand { get; }
-
-        [DoNotNotify]
-        public IRefreshableCommand SayHelloCommand { get; }
-
-        [DoNotNotify]
-        public IRefreshableCommand CloseCommand { get; }
-
-        public MainViewModel()
-        {
-            MinimazeCommand = new RelayCommand(() => App.Current.MainWindow.WindowState = System.Windows.WindowState.Minimized);
-            SayHelloCommand = new RelayCommand(() => NotificationService.Notify("Greetings", "Hello World!"));
-            CloseCommand = new RelayCommand(App.Current.MainWindow.Close);
-        }
+        MinimazeCommand = new RelayCommand(() => App.Current.MainWindow.WindowState = System.Windows.WindowState.Minimized);
+        SayHelloCommand = new RelayCommand(() => NotificationService.Notify("Greetings", "Hello World!"));
+        CloseCommand = new RelayCommand(App.Current.MainWindow.Close);
     }
 }
 ```
-
------------------------------
-
-***In Develop***
+**Note:** in ViewModel was used [PropertyChanged.Fody](https://github.com/Fody/PropertyChanged) plugin, to simplify usage of `INotifyPropertyChanged`.
