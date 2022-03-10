@@ -36,7 +36,7 @@ For XAML:
 
 For C#:
 ```C#
-private TrayIcon MyTrayIcon = new TrayIcon() 
+TrayIcon MyTrayIcon = new TrayIcon() 
 { 
     Title = "My Application",
     IconSource = new BitmapImage(new Uri("pack://application:,,,/MainIcon.ico")),
