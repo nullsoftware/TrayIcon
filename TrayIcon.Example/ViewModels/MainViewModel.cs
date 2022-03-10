@@ -10,7 +10,8 @@ namespace TrayIcon.Example.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
-        public INotificationService NotificationService { get; private set; }
+        [DoNotNotify]
+        private INotificationService NotificationService { get; set; }
 
         public bool IsSilentModeEnabled { get; set; }
 
