@@ -36,7 +36,7 @@ For XAML:
 
 For C#:
 ```C#
-TrayIcon MyTrayIcon = new TrayIcon() 
+TrayIcon myTrayIcon = new TrayIcon() 
 { 
     Title = "My Application",
     IconSource = new BitmapImage(new Uri("pack://application:,,,/MainIcon.ico")),
@@ -46,7 +46,7 @@ TrayIcon MyTrayIcon = new TrayIcon()
 ----
 To show balloon you need to call `Notify` method:
 ```C#
-INotificationService notifyService = MyTrayIcon;
+INotificationService notifyService = myTrayIcon;
 notifyService.Notify("Greetings", "Hello World!", NotificationType.Information);
 ```
 **Note:** `INotificationService` can be obtained from XAML by using `NotificationServiceMemberPath`.
