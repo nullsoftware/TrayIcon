@@ -22,9 +22,37 @@ And for C#:
 ```C#
 using NullSoftware.ToolKit;
 ```
-
+----
 Then you can place tray icon inside your window, or keep it in variable/property.
+For XAML:
+```XAML
+<icon:TrayIconHandlers.TrayIcons>
+    <icon:TrayIcon Title="My Application"
+                   IconSource="MainIcon.ico"
+                   ClickCommand="{Binding ExampleCommand}"
+                   NotificationServiceMemberPath="NotificationService"/>
+</icon:TrayIconHandlers.TrayIcons>
+```
 
+For C#:
+```C#
+private TrayIcon MyTrayIcon = new TrayIcon() 
+{ 
+    Title = "My Application",
+    IconSource = new BitmapImage(new Uri("pack://application:,,,/MainIcon.ico")),
+    ClickCommand = new RelayCommand(ExampleAction)
+};
+```
+----
+To show balloon you need to call `Notify` method:
+```C#
+INotificationService notifyService = MyTrayIcon;
+notifyService.Notify("Greetings", "Hello World!", NotificationType.Information);
+```
+**Note:** `INotificationService` can be obtained from XAML by using `NotificationServiceMemberPath`.
+It injects `INotificationService` to specified DataContext property.
+
+----
 Full Example:
 ```XAML
 <Window x:Class="TrayIcon.Example.MainWindow"
