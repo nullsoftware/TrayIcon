@@ -23,6 +23,8 @@ using WPFBinding = System.Windows.Data.Binding;
 using WPFContextMenu = System.Windows.Controls.ContextMenu;
 using WPFMenuItem = System.Windows.Controls.MenuItem;
 using WPFSeparator = System.Windows.Controls.Separator;
+using WPFMouseEventArgs = System.Windows.Input.MouseEventArgs;
+using WinFormsMouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
 #pragma warning disable CS0612 // Type or member is obsolete
 
@@ -31,6 +33,7 @@ namespace NullSoftware.ToolKit
     /// <summary>
     /// Specifies a component that creates an icon in the notification area.
     /// </summary>
+    [DefaultEvent(nameof(Click))]
     public class TrayIcon : FrameworkElement, INotificationService, IDisposable
     {
         #region Dependency Properties Registration
@@ -63,6 +66,13 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata());
 
+        public static readonly DependencyProperty ClickCommandParameterProperty =
+            DependencyProperty.Register(
+                nameof(ClickCommandParameter),
+                typeof(object),
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata());
+
         public static readonly DependencyProperty DoubleClickCommandProperty =
             DependencyProperty.Register(
                 nameof(DoubleClickCommand),
@@ -70,10 +80,24 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata());
 
+        public static readonly DependencyProperty DoubleClickCommandParameterProperty =
+            DependencyProperty.Register(
+                nameof(DoubleClickCommandParameter),
+                typeof(object),
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata());
+
         public static readonly DependencyProperty BalloonTipClickCommandProperty =
             DependencyProperty.Register(
                 nameof(BalloonTipClickCommand),
                 typeof(ICommand),
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata());
+
+        public static readonly DependencyProperty BalloonTipClickCommandParameterProperty =
+            DependencyProperty.Register(
+                nameof(BalloonTipClickCommandParameter),
+                typeof(object),
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata());
 
@@ -90,6 +114,99 @@ namespace NullSoftware.ToolKit
                typeof(bool),
                typeof(TrayIcon),
                new FrameworkPropertyMetadata(false));
+
+        #endregion
+
+        #region Routed Events Registration
+
+        public static readonly RoutedEvent ClickEvent = 
+            EventManager.RegisterRoutedEvent(
+                nameof(Click),
+                RoutingStrategy.Bubble,
+                typeof(RoutedEventHandler),
+                typeof(TrayIcon));
+
+        public static readonly RoutedEvent MouseDoubleClickEvent =
+            EventManager.RegisterRoutedEvent(
+                nameof(MouseDoubleClick),
+                RoutingStrategy.Bubble,
+                typeof(RoutedEventHandler),
+                typeof(TrayIcon));
+
+        public static readonly RoutedEvent BalloonTipClickEvent =
+            EventManager.RegisterRoutedEvent(
+                nameof(BalloonTipClick),
+                RoutingStrategy.Bubble,
+                typeof(RoutedEventHandler),
+                typeof(TrayIcon));
+
+        public static readonly RoutedEvent BalloonTipShownEvent =
+           EventManager.RegisterRoutedEvent(
+               nameof(BalloonTipShown),
+               RoutingStrategy.Bubble,
+               typeof(RoutedEventHandler),
+               typeof(TrayIcon));
+
+        public static readonly RoutedEvent BalloonTipClosedEvent =
+           EventManager.RegisterRoutedEvent(
+               nameof(BalloonTipClosed),
+               RoutingStrategy.Bubble,
+               typeof(RoutedEventHandler),
+               typeof(TrayIcon));
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Occurs when a <see cref="TrayIcon"/> is clicked.
+        /// </summary>
+        [Category("Behavior")]
+        public event RoutedEventHandler Click
+        {
+            add { AddHandler(ClickEvent, value); }
+            remove { RemoveHandler(ClickEvent, value); }
+        }
+
+        /// <summary>
+        /// Occurs when a <see cref="TrayIcon"/> is double-clicked.
+        /// </summary>
+        [Category("Behavior")]
+        public event RoutedEventHandler MouseDoubleClick
+        {
+            add { AddHandler(MouseDoubleClickEvent, value); }
+            remove { RemoveHandler(MouseDoubleClickEvent, value); }
+        }
+
+        /// <summary>
+        /// Occurs when the balloon tip is clicked.
+        /// </summary>
+        [Category("Behavior")]
+        public event RoutedEventHandler BalloonTipClick
+        {
+            add { AddHandler(BalloonTipClickEvent, value); }
+            remove { RemoveHandler(BalloonTipClickEvent, value); }
+        }
+
+        /// <summary>
+        /// Occurs when the balloon tip is displayed on the screen.
+        /// </summary>
+        [Category("Behavior")]
+        public event RoutedEventHandler BalloonTipShown
+        {
+            add { AddHandler(BalloonTipShownEvent, value); }
+            remove { RemoveHandler(BalloonTipShownEvent, value); }
+        }
+
+        /// <summary>
+        /// Occurs when the balloon tip is closed by the user.
+        /// </summary>
+        [Category("Behavior")]
+        public event RoutedEventHandler BalloonTipClosed
+        {
+            add { AddHandler(BalloonTipClosedEvent, value); }
+            remove { RemoveHandler(BalloonTipClosedEvent, value); }
+        }
 
         #endregion
 
@@ -134,25 +251,52 @@ namespace NullSoftware.ToolKit
             set { SetValue(IconSourceProperty, value); }
         }
 
-        [Category("Common")]
+        [Bindable(true)]
+        [Category("Action")]
         public ICommand ClickCommand
         {
             get { return (ICommand)GetValue(ClickCommandProperty); }
             set { SetValue(ClickCommandProperty, value); }
         }
 
-        [Category("Common")]
+        [Bindable(true)]
+        [Category("Action")]
+        public object ClickCommandParameter
+        {
+            get { return GetValue(ClickCommandParameterProperty); }
+            set { SetValue(ClickCommandParameterProperty, value); }
+        }
+
+        [Bindable(true)]
+        [Category("Action")]
         public ICommand DoubleClickCommand
         {
             get { return (ICommand)GetValue(DoubleClickCommandProperty); }
             set { SetValue(DoubleClickCommandProperty, value); }
         }
 
-        [Category("Common")]
+        [Bindable(true)]
+        [Category("Action")]
+        public object DoubleClickCommandParameter
+        {
+            get { return GetValue(DoubleClickCommandParameterProperty); }
+            set { SetValue(DoubleClickCommandParameterProperty, value); }
+        }
+
+        [Bindable(true)]
+        [Category("Action")]
         public ICommand BalloonTipClickCommand
         {
             get { return (ICommand)GetValue(BalloonTipClickCommandProperty); }
             set { SetValue(BalloonTipClickCommandProperty, value); }
+        }
+
+        [Bindable(true)]
+        [Category("Action")]
+        public object BalloonTipClickCommandParameter
+        {
+            get { return GetValue(BalloonTipClickCommandParameterProperty); }
+            set { SetValue(BalloonTipClickCommandParameterProperty, value); }
         }
 
         /// <summary>
@@ -201,9 +345,14 @@ namespace NullSoftware.ToolKit
 
             // event subscription
             NotifyIcon.Disposed += (sender, e) => NotifyIcon = null;
-            NotifyIcon.Click += (sender, e) => ClickCommand?.Execute(null);
-            NotifyIcon.DoubleClick += (sender, e) => DoubleClickCommand?.Execute(null);
-            NotifyIcon.BalloonTipClicked += (sender, e) => BalloonTipClickCommand?.Execute(null);
+            NotifyIcon.BalloonTipClicked += OnNotifyIconBalloonTipClicked;
+            NotifyIcon.BalloonTipShown += OnNotifyIconBalloonTipShown;
+            NotifyIcon.BalloonTipClosed += OnNotifyIconBalloonTipClosed;
+            NotifyIcon.MouseClick += OnNotifyIconMouseClick;
+            NotifyIcon.MouseDoubleClick += OnNotifyIconMouseDoubleClick;
+            NotifyIcon.MouseDown += OnNotifyIconMouseDown;
+            NotifyIcon.MouseUp += OnNotifyIconMouseUp;
+            NotifyIcon.MouseMove += OnNotifyIconMouseMove;
             WPFApplication.Current.Exit += (sender, e) => NotifyIcon?.Dispose();
         }
 
@@ -313,6 +462,11 @@ namespace NullSoftware.ToolKit
                 WPFMenuItem.HeaderProperty, 
                 typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Text = GetHeader(item)));
 
+            DependencyPropertyDescriptor.FromProperty(
+                WPFMenuItem.VisibilityProperty,
+                typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Visible = item.Visibility == Visibility.Visible));
+
+            result.Visible = item.Visibility == Visibility.Visible;
             result.Enabled = item.IsEnabled;
             item.IsEnabledChanged += (sender, e) => result.Enabled = (bool)e.NewValue;
             
@@ -430,6 +584,87 @@ namespace NullSoftware.ToolKit
         public static bool GetIsDefault(DependencyObject element)
         {
             return (bool)element.GetValue(IsDefaultProperty);
+        }
+
+        private void OnNotifyIconBalloonTipClicked(object sender, EventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(BalloonTipClickEvent));
+
+            BalloonTipClickCommand?.Execute(BalloonTipClickCommandParameter);
+        }
+
+        private void OnNotifyIconBalloonTipShown(object sender, EventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(BalloonTipShownEvent));
+        }
+
+        private void OnNotifyIconBalloonTipClosed(object sender, EventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(BalloonTipClosedEvent));
+        }
+
+        private void OnNotifyIconMouseClick(object sender, WinFormsMouseEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(ClickEvent));
+
+            if (e.Button == MouseButtons.Left)
+            {
+                ClickCommand?.Execute(ClickCommandParameter);
+            }
+        }
+
+        private void OnNotifyIconMouseDoubleClick(object sender, WinFormsMouseEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(MouseDoubleClickEvent));
+
+            if (e.Button == MouseButtons.Left)
+            {
+                DoubleClickCommand?.Execute(DoubleClickCommandParameter);
+            }
+        }
+
+        private void OnNotifyIconMouseDown(object sender, WinFormsMouseEventArgs e)
+        {
+            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks, ToMouseButton(e.Button))
+            {
+                RoutedEvent = MouseDownEvent
+            };
+
+            RaiseEvent(routedEvent);
+        }
+
+        private void OnNotifyIconMouseUp(object sender, WinFormsMouseEventArgs e)
+        {
+            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks, ToMouseButton(e.Button))
+            {
+                RoutedEvent = MouseUpEvent
+            };
+
+            RaiseEvent(routedEvent);
+        }
+
+        private void OnNotifyIconMouseMove(object sender, WinFormsMouseEventArgs e)
+        {
+            var routedEvent = new WPFMouseEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks)
+            {
+                RoutedEvent = MouseMoveEvent
+            };
+
+            RaiseEvent(routedEvent);
+        }
+
+        private MouseButton ToMouseButton(MouseButtons btn)
+        {
+            switch (btn)
+            {
+                case MouseButtons.Left: return MouseButton.Left;
+                case MouseButtons.Right: return MouseButton.Right;
+                case MouseButtons.Middle: return MouseButton.Middle;
+                case MouseButtons.XButton1: return MouseButton.XButton1;
+                case MouseButtons.XButton2: return MouseButton.XButton2;
+                default:
+                    throw new NotSupportedException($"Can not convert System.Windows.Forms.MouseButtons.{btn} to System.Windows.Input.MouseButton.");
+            }
         }
 
         #endregion
