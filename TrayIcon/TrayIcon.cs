@@ -604,6 +604,14 @@ namespace NullSoftware.ToolKit
             }
         }
 
+        private static MouseButtonEventArgs ToMouseButtonEventArgs(WinFormsMouseEventArgs e, RoutedEvent routedEvent)
+        {
+            return new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, ToMouseButton(e.Button))
+            {
+                RoutedEvent = routedEvent
+            };
+        }
+
         private ContextMenu GenerateContextMenu(WPFContextMenu original)
         {
             if (original == null || original.Items.Count == 0)
@@ -699,12 +707,7 @@ namespace NullSoftware.ToolKit
 
         private void OnNotifyIconMouseClick(object sender, WinFormsMouseEventArgs e)
         {
-            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, ToMouseButton(e.Button))
-            {
-                RoutedEvent = ClickEvent
-            };
-
-            RaiseEvent(routedEvent);
+            RaiseEvent(ToMouseButtonEventArgs(e, ClickEvent));
 
             if (e.Button == MouseButtons.Left)
             {
@@ -714,12 +717,7 @@ namespace NullSoftware.ToolKit
 
         private void OnNotifyIconMouseDoubleClick(object sender, WinFormsMouseEventArgs e)
         {
-            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, ToMouseButton(e.Button))
-            {
-                RoutedEvent = MouseDoubleClickEvent
-            };
-
-            RaiseEvent(routedEvent);
+            RaiseEvent(ToMouseButtonEventArgs(e, MouseDoubleClickEvent));
 
             if (e.Button == MouseButtons.Left)
             {
@@ -729,22 +727,12 @@ namespace NullSoftware.ToolKit
 
         private void OnNotifyIconMouseDown(object sender, WinFormsMouseEventArgs e)
         {
-            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, ToMouseButton(e.Button))
-            {
-                RoutedEvent = MouseDownEvent
-            };
-
-            RaiseEvent(routedEvent);
+            RaiseEvent(ToMouseButtonEventArgs(e, MouseDownEvent));
         }
 
         private void OnNotifyIconMouseUp(object sender, WinFormsMouseEventArgs e)
         {
-            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, ToMouseButton(e.Button))
-            {
-                RoutedEvent = MouseUpEvent
-            };
-
-            RaiseEvent(routedEvent);
+            RaiseEvent(ToMouseButtonEventArgs(e, MouseUpEvent));
         }
 
         private void OnNotifyIconMouseMove(object sender, WinFormsMouseEventArgs e)
