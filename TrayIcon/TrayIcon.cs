@@ -38,6 +38,9 @@ namespace NullSoftware.ToolKit
     {
         #region Dependency Properties Registration
 
+        /// <summary>
+        /// Identifies the <see cref="ShowTimeout"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ShowTimeoutProperty =
             DependencyProperty.Register(
                 nameof(ShowTimeout),
@@ -45,6 +48,9 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata((ushort)10000));
 
+        /// <summary>
+        /// Identifies the <see cref="Title"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register(
                 nameof(Title), 
@@ -52,6 +58,9 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon), 
                 new FrameworkPropertyMetadata(OnTitleChanged));
 
+        /// <summary>
+        /// Identifies the <see cref="IconSource"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IconSourceProperty =
             DependencyProperty.Register(
                 nameof(IconSource), 
@@ -59,6 +68,9 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata(OnIconSourceChanged));
 
+        /// <summary>
+        /// Identifies the <see cref="ClickCommand"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ClickCommandProperty =
             DependencyProperty.Register(
                 nameof(ClickCommand), 
@@ -66,6 +78,9 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata());
 
+        /// <summary>
+        /// Identifies the <see cref="ClickCommandParameter"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ClickCommandParameterProperty =
             DependencyProperty.Register(
                 nameof(ClickCommandParameter),
@@ -73,6 +88,9 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata());
 
+        /// <summary>
+        /// Identifies the <see cref="DoubleClickCommand"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty DoubleClickCommandProperty =
             DependencyProperty.Register(
                 nameof(DoubleClickCommand),
@@ -80,6 +98,9 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata());
 
+        /// <summary>
+        /// Identifies the <see cref="DoubleClickCommandParameter"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty DoubleClickCommandParameterProperty =
             DependencyProperty.Register(
                 nameof(DoubleClickCommandParameter),
@@ -87,6 +108,9 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata());
 
+        /// <summary>
+        /// Identifies the <see cref="BalloonTipClickCommand"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty BalloonTipClickCommandProperty =
             DependencyProperty.Register(
                 nameof(BalloonTipClickCommand),
@@ -94,6 +118,9 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata());
 
+        /// <summary>
+        /// Identifies the <see cref="BalloonTipClickCommandParameter"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty BalloonTipClickCommandParameterProperty =
             DependencyProperty.Register(
                 nameof(BalloonTipClickCommandParameter),
@@ -101,6 +128,9 @@ namespace NullSoftware.ToolKit
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata());
 
+        /// <summary>
+        /// Identifies the <see cref="NotificationServiceMemberPath"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty NotificationServiceMemberPathProperty =
            DependencyProperty.Register(
                nameof(NotificationServiceMemberPath),
@@ -108,6 +138,9 @@ namespace NullSoftware.ToolKit
                typeof(TrayIcon),
                new FrameworkPropertyMetadata(OnNotificationServiceMemberPathChanged));
 
+        /// <summary>
+        /// Identifies the NullSoftware.ToolKit.TrayIcon.IsDefault attached property.
+        /// </summary>
         public static readonly DependencyProperty IsDefaultProperty =
             DependencyProperty.RegisterAttached(
                "IsDefault",
@@ -119,6 +152,9 @@ namespace NullSoftware.ToolKit
 
         #region Routed Events Registration
 
+        /// <summary>
+        /// Identifies the <see cref="Click"/> routed event.
+        /// </summary>
         public static readonly RoutedEvent ClickEvent = 
             EventManager.RegisterRoutedEvent(
                 nameof(Click),
@@ -126,6 +162,9 @@ namespace NullSoftware.ToolKit
                 typeof(RoutedEventHandler),
                 typeof(TrayIcon));
 
+        /// <summary>
+        /// Identifies the <see cref="MouseDoubleClick"/> routed event.
+        /// </summary>
         public static readonly RoutedEvent MouseDoubleClickEvent =
             EventManager.RegisterRoutedEvent(
                 nameof(MouseDoubleClick),
@@ -133,6 +172,9 @@ namespace NullSoftware.ToolKit
                 typeof(RoutedEventHandler),
                 typeof(TrayIcon));
 
+        /// <summary>
+        /// Identifies the <see cref="BalloonTipClick"/> routed event.
+        /// </summary>
         public static readonly RoutedEvent BalloonTipClickEvent =
             EventManager.RegisterRoutedEvent(
                 nameof(BalloonTipClick),
@@ -140,6 +182,9 @@ namespace NullSoftware.ToolKit
                 typeof(RoutedEventHandler),
                 typeof(TrayIcon));
 
+        /// <summary>
+        /// Identifies the <see cref="BalloonTipShown"/> routed event.
+        /// </summary>
         public static readonly RoutedEvent BalloonTipShownEvent =
            EventManager.RegisterRoutedEvent(
                nameof(BalloonTipShown),
@@ -147,6 +192,9 @@ namespace NullSoftware.ToolKit
                typeof(RoutedEventHandler),
                typeof(TrayIcon));
 
+        /// <summary>
+        /// Identifies the <see cref="BalloonTipClosed"/> routed event.
+        /// </summary>
         public static readonly RoutedEvent BalloonTipClosedEvent =
            EventManager.RegisterRoutedEvent(
                nameof(BalloonTipClosed),
@@ -368,6 +416,30 @@ namespace NullSoftware.ToolKit
 
         #region Methods
 
+        /// <summary>
+        /// Gets the value of the NullSoftware.ToolKit.TrayIcon.IsDefault 
+        /// attached property from a given <see cref="DependencyObject"/>.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns>
+        /// The value of the NullSoftware.ToolKit.TrayIcon.IsDefault attached property.
+        /// </returns>
+        public static bool GetIsDefault(DependencyObject element)
+        {
+            return (bool)element.GetValue(IsDefaultProperty);
+        }
+
+        /// <summary>
+        /// Sets the value of the NullSoftware.ToolKit.TrayIcon.IsDefault 
+        /// attached property to a given <see cref="DependencyObject"/>.
+        /// </summary>
+        /// <param name="element">The element on which to set the attached property.</param>
+        /// <param name="value">The property value to set.</param>
+        public static void SetIsDefault(DependencyObject element, bool value)
+        {
+            element.SetValue(IsDefaultProperty, value);
+        }
+
         /// <inheritdoc/>
         public void Notify(string title, string text)
         {
@@ -417,87 +489,6 @@ namespace NullSoftware.ToolKit
 
                 return false;
             }
-        }
-
-        private ContextMenu GenerateContextMenu(WPFContextMenu original)
-        {
-            if (original == null || original.Items.Count == 0)
-                return null;
-
-            original.SetBinding(
-                FrameworkElement.DataContextProperty,
-                new WPFBinding(nameof(DataContext)) { Source = this });
-
-            return new ContextMenu(GenerateMenuItems(original.Items));
-        }
-
-        private MenuItem[] GenerateMenuItems(ItemCollection original)
-        {
-            List<MenuItem> result = new List<MenuItem>();
-
-            foreach (FrameworkElement item in original)
-            {
-                switch (item)
-                {
-                    case WPFMenuItem menuItem:
-                        result.Add(LinkMenuItem(menuItem));
-                        break;
-                    case WPFSeparator separator:
-                        result.Add(new MenuItem("-"));
-                        break;
-                    default:
-                        throw new NotSupportedException($"Type '{item.GetType()}' not supported.");
-                }
-            }
-
-            return result.ToArray();
-        }
-
-        private MenuItem LinkMenuItem(WPFMenuItem item)
-        {
-            MenuItem result = new MenuItem(GetHeader(item));
-
-            // needed to change menu item header dynamically
-            DependencyPropertyDescriptor.FromProperty(
-                WPFMenuItem.HeaderProperty, 
-                typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Text = GetHeader(item)));
-
-            DependencyPropertyDescriptor.FromProperty(
-                WPFMenuItem.VisibilityProperty,
-                typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Visible = item.Visibility == Visibility.Visible));
-
-            result.Visible = item.Visibility == Visibility.Visible;
-            result.Enabled = item.IsEnabled;
-            item.IsEnabledChanged += (sender, e) => result.Enabled = (bool)e.NewValue;
-            
-            result.DefaultItem = GetIsDefault(item);
-
-            if (item.Items.Count != 0)
-            {
-                result.MenuItems.AddRange(GenerateMenuItems(item.Items));
-
-                return result;
-            }
-
-            if (item.IsCheckable)
-            {
-                item.AddHandler(WPFMenuItem.CheckedEvent, new RoutedEventHandler((sender, e) => result.Checked = true));
-                item.AddHandler(WPFMenuItem.UncheckedEvent, new RoutedEventHandler((sender, e) => result.Checked = false));
-
-                result.Checked = item.IsChecked;
-            }
-
-            MenuItemAutomationPeer peer = new MenuItemAutomationPeer(item);
-            IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-
-            result.Click += (sender, e) => invokeProv.Invoke();
-
-            return result;
-        }
-
-        private string GetHeader(WPFMenuItem item)
-        {
-            return item.Header?.ToString()?.Replace("_", "&");
         }
 
         private static void OnTitleChanged(
@@ -576,14 +567,99 @@ namespace NullSoftware.ToolKit
             }
         }
 
-        public static void SetIsDefault(DependencyObject element, bool value)
+        private static string GetHeader(WPFMenuItem item)
         {
-            element.SetValue(IsDefaultProperty, value);
+            return item.Header?.ToString()?.Replace("_", "&");
         }
 
-        public static bool GetIsDefault(DependencyObject element)
+        private static MouseButton ToMouseButton(MouseButtons btn)
         {
-            return (bool)element.GetValue(IsDefaultProperty);
+            switch (btn)
+            {
+                case MouseButtons.Left: return MouseButton.Left;
+                case MouseButtons.Right: return MouseButton.Right;
+                case MouseButtons.Middle: return MouseButton.Middle;
+                case MouseButtons.XButton1: return MouseButton.XButton1;
+                case MouseButtons.XButton2: return MouseButton.XButton2;
+                default:
+                    throw new NotSupportedException($"Can not convert System.Windows.Forms.MouseButtons.{btn} to System.Windows.Input.MouseButton.");
+            }
+        }
+
+        private ContextMenu GenerateContextMenu(WPFContextMenu original)
+        {
+            if (original == null || original.Items.Count == 0)
+                return null;
+
+            original.SetBinding(
+                FrameworkElement.DataContextProperty,
+                new WPFBinding(nameof(DataContext)) { Source = this });
+
+            return new ContextMenu(GenerateMenuItems(original.Items));
+        }
+
+        private MenuItem[] GenerateMenuItems(ItemCollection original)
+        {
+            List<MenuItem> result = new List<MenuItem>();
+
+            foreach (FrameworkElement item in original)
+            {
+                switch (item)
+                {
+                    case WPFMenuItem menuItem:
+                        result.Add(LinkMenuItem(menuItem));
+                        break;
+                    case WPFSeparator separator:
+                        result.Add(new MenuItem("-"));
+                        break;
+                    default:
+                        throw new NotSupportedException($"Type '{item.GetType()}' not supported.");
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        private MenuItem LinkMenuItem(WPFMenuItem item)
+        {
+            MenuItem result = new MenuItem(GetHeader(item));
+
+            // needed to change menu item header dynamically
+            DependencyPropertyDescriptor.FromProperty(
+                WPFMenuItem.HeaderProperty,
+                typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Text = GetHeader(item)));
+
+            DependencyPropertyDescriptor.FromProperty(
+                WPFMenuItem.VisibilityProperty,
+                typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Visible = item.Visibility == Visibility.Visible));
+
+            result.Visible = item.Visibility == Visibility.Visible;
+            result.Enabled = item.IsEnabled;
+            item.IsEnabledChanged += (sender, e) => result.Enabled = (bool)e.NewValue;
+
+            result.DefaultItem = GetIsDefault(item);
+
+            if (item.Items.Count != 0)
+            {
+                result.MenuItems.AddRange(GenerateMenuItems(item.Items));
+
+                return result;
+            }
+
+            if (item.IsCheckable)
+            {
+                item.AddHandler(WPFMenuItem.CheckedEvent, new RoutedEventHandler((sender, e) => result.Checked = true));
+                item.AddHandler(WPFMenuItem.UncheckedEvent, new RoutedEventHandler((sender, e) => result.Checked = false));
+
+                result.Checked = item.IsChecked;
+            }
+
+            MenuItemAutomationPeer peer = new MenuItemAutomationPeer(item);
+            IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+
+            result.Click += (sender, e) => invokeProv.Invoke();
+
+            return result;
         }
 
         private void OnNotifyIconBalloonTipClicked(object sender, EventArgs e)
@@ -651,20 +727,6 @@ namespace NullSoftware.ToolKit
             };
 
             RaiseEvent(routedEvent);
-        }
-
-        private MouseButton ToMouseButton(MouseButtons btn)
-        {
-            switch (btn)
-            {
-                case MouseButtons.Left: return MouseButton.Left;
-                case MouseButtons.Right: return MouseButton.Right;
-                case MouseButtons.Middle: return MouseButton.Middle;
-                case MouseButtons.XButton1: return MouseButton.XButton1;
-                case MouseButtons.XButton2: return MouseButton.XButton2;
-                default:
-                    throw new NotSupportedException($"Can not convert System.Windows.Forms.MouseButtons.{btn} to System.Windows.Input.MouseButton.");
-            }
         }
 
         #endregion
