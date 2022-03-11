@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>NullSoftware.ToolKit</RootNamespace>
     <AssemblyName>TrayIcon</AssemblyName>
-    <Version>1.0.7.0</Version>
+    <Version>1.0.7.1</Version>
     <Authors>Null Software</Authors>
     <Company>Null Software</Company>
     <Product>Tray Icon</Product>
@@ -19,8 +19,8 @@
     <PackageReleaseNotes></PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>1.0.7.0</AssemblyVersion>
-    <FileVersion>1.0.7.0</FileVersion>
+    <AssemblyVersion>1.0.7.1</AssemblyVersion>
+    <FileVersion>1.0.7.1</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.0|AnyCPU'">
