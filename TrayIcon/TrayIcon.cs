@@ -299,6 +299,9 @@ namespace NullSoftware.ToolKit
             set { SetValue(IconSourceProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or sets the command to invoke when this Tray Icon is pressed.
+        /// </summary>
         [Bindable(true)]
         [Category("Action")]
         public ICommand ClickCommand
@@ -307,6 +310,9 @@ namespace NullSoftware.ToolKit
             set { SetValue(ClickCommandProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or sets the parameter to pass to the <see cref="ClickCommand"/> property.
+        /// </summary>
         [Bindable(true)]
         [Category("Action")]
         public object ClickCommandParameter
@@ -315,6 +321,9 @@ namespace NullSoftware.ToolKit
             set { SetValue(ClickCommandParameterProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or sets the command to invoke when this Tray Icon is clicked two or more times.
+        /// </summary>
         [Bindable(true)]
         [Category("Action")]
         public ICommand DoubleClickCommand
@@ -323,6 +332,9 @@ namespace NullSoftware.ToolKit
             set { SetValue(DoubleClickCommandProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or sets the parameter to pass to the <see cref="DoubleClickCommand"/> property.
+        /// </summary>
         [Bindable(true)]
         [Category("Action")]
         public object DoubleClickCommandParameter
@@ -331,6 +343,9 @@ namespace NullSoftware.ToolKit
             set { SetValue(DoubleClickCommandParameterProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or sets the command to invoke when balloon tip is pressed.
+        /// </summary>
         [Bindable(true)]
         [Category("Action")]
         public ICommand BalloonTipClickCommand
@@ -339,6 +354,9 @@ namespace NullSoftware.ToolKit
             set { SetValue(BalloonTipClickCommandProperty, value); }
         }
 
+        /// <summary>
+        /// Gets or sets the parameter to pass to the <see cref="BalloonTipClickCommand"/> property.
+        /// </summary>
         [Bindable(true)]
         [Category("Action")]
         public object BalloonTipClickCommandParameter
