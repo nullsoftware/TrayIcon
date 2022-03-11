@@ -719,7 +719,7 @@ namespace NullSoftware.ToolKit
 
         private void OnNotifyIconMouseDown(object sender, WinFormsMouseEventArgs e)
         {
-            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks, ToMouseButton(e.Button))
+            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, ToMouseButton(e.Button))
             {
                 RoutedEvent = MouseDownEvent
             };
@@ -729,7 +729,7 @@ namespace NullSoftware.ToolKit
 
         private void OnNotifyIconMouseUp(object sender, WinFormsMouseEventArgs e)
         {
-            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks, ToMouseButton(e.Button))
+            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, ToMouseButton(e.Button))
             {
                 RoutedEvent = MouseUpEvent
             };
@@ -739,7 +739,7 @@ namespace NullSoftware.ToolKit
 
         private void OnNotifyIconMouseMove(object sender, WinFormsMouseEventArgs e)
         {
-            var routedEvent = new WPFMouseEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks)
+            var routedEvent = new WPFMouseEventArgs(Mouse.PrimaryDevice, Environment.TickCount)
             {
                 RoutedEvent = MouseMoveEvent
             };
