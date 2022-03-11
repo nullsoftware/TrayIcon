@@ -159,7 +159,7 @@ namespace NullSoftware.ToolKit
             EventManager.RegisterRoutedEvent(
                 nameof(Click),
                 RoutingStrategy.Bubble,
-                typeof(RoutedEventHandler),
+                typeof(MouseButtonEventHandler),
                 typeof(TrayIcon));
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace NullSoftware.ToolKit
             EventManager.RegisterRoutedEvent(
                 nameof(MouseDoubleClick),
                 RoutingStrategy.Bubble,
-                typeof(RoutedEventHandler),
+                typeof(MouseButtonEventHandler),
                 typeof(TrayIcon));
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace NullSoftware.ToolKit
         /// Occurs when a <see cref="TrayIcon"/> is clicked.
         /// </summary>
         [Category("Behavior")]
-        public event RoutedEventHandler Click
+        public event MouseButtonEventHandler Click
         {
             add { AddHandler(ClickEvent, value); }
             remove { RemoveHandler(ClickEvent, value); }
@@ -220,7 +220,7 @@ namespace NullSoftware.ToolKit
         /// Occurs when a <see cref="TrayIcon"/> is double-clicked.
         /// </summary>
         [Category("Behavior")]
-        public event RoutedEventHandler MouseDoubleClick
+        public event MouseButtonEventHandler MouseDoubleClick
         {
             add { AddHandler(MouseDoubleClickEvent, value); }
             remove { RemoveHandler(MouseDoubleClickEvent, value); }
@@ -699,7 +699,12 @@ namespace NullSoftware.ToolKit
 
         private void OnNotifyIconMouseClick(object sender, WinFormsMouseEventArgs e)
         {
-            RaiseEvent(new RoutedEventArgs(ClickEvent));
+            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, ToMouseButton(e.Button))
+            {
+                RoutedEvent = ClickEvent
+            };
+
+            RaiseEvent(routedEvent);
 
             if (e.Button == MouseButtons.Left)
             {
@@ -709,7 +714,12 @@ namespace NullSoftware.ToolKit
 
         private void OnNotifyIconMouseDoubleClick(object sender, WinFormsMouseEventArgs e)
         {
-            RaiseEvent(new RoutedEventArgs(MouseDoubleClickEvent));
+            var routedEvent = new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, ToMouseButton(e.Button))
+            {
+                RoutedEvent = MouseDoubleClickEvent
+            };
+
+            RaiseEvent(routedEvent);
 
             if (e.Button == MouseButtons.Left)
             {
