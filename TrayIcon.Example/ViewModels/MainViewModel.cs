@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NullSoftware.ToolKit;
 using PropertyChanged;
 
-namespace TrayIcon.Example.ViewModels
+namespace Example.ViewModels
 {
     public class MainViewModel : ObservableObject
     {

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace TrayIcon.Example
+namespace Example
 {
     /// <summary>
     /// Base class for objects that require property notification.

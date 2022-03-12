@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace TrayIcon.Example
+namespace Example
 {
     /// <summary>
     /// Refreshable command, wehere can be manually raised <see cref="ICommand.CanExecuteChanged"/> event.

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TrayIcon.Example.Properties {
+namespace Example.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
