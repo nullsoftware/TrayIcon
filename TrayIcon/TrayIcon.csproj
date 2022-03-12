@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>NullSoftware.ToolKit</RootNamespace>
     <AssemblyName>TrayIcon</AssemblyName>
-    <Version>1.0.7.1</Version>
+    <Version>1.0.7.2</Version>
     <Authors>Null Software</Authors>
     <Company>Null Software</Company>
     <Product>Tray Icon</Product>
@@ -20,8 +20,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>1.0.7.1</AssemblyVersion>
-    <FileVersion>1.0.7.1</FileVersion>
+    <AssemblyVersion>1.0.7.2</AssemblyVersion>
+    <FileVersion>1.0.7.2</FileVersion>
   </PropertyGroup>
 
 
