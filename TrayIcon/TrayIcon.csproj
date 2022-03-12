@@ -17,14 +17,12 @@
     <PackageTags>TrayIcon NotifyIcon WPF Tray WindowsTray Taskbar Notification TaskbarNotification Balloon</PackageTags>
     <PackageProjectUrl>https://github.com/nullsoftware/TrayIcon</PackageProjectUrl>
     <PackageReleaseNotes></PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <AssemblyVersion>1.0.7.1</AssemblyVersion>
     <FileVersion>1.0.7.1</FileVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.0|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>
 
 </Project>
