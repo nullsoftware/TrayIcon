@@ -35,7 +35,8 @@ And for C#:
 using NullSoftware.ToolKit;
 ```
 ----
-Then you can place tray icon inside your window, or keep it in variable/property.
+Then you can place tray icon inside your window, or keep it in variable/property.  
+
 For XAML:
 ```XAML
 <icon:TrayIconHandlers.TrayIcons>
