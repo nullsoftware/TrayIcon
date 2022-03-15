@@ -1,3 +1,6 @@
+[![](https://img.shields.io/nuget/vpre/TrayIcon)](https://www.nuget.org/packages/TrayIcon/)
+[![](https://img.shields.io/nuget/dt/TrayIcon)](https://www.nuget.org/packages/TrayIcon/)
+
 # Tray Icon
 Library that allows use Tray Icon in WPF Application. 
 Ported from Windows Forms. Has wrapper for WPF ContexMenu (which converts it to Windows Forms ContextMenu). This is needed for good performance, and compatibility.
@@ -6,10 +9,19 @@ This library targets all MVVM requirements:
 - it has interface with notify methods
 
 ## Getting started.
-Installation ([NuGet](https://www.nuget.org/packages/TrayIcon)):
-```nuget
-Install-Package TrayIcon
-```
+Use one of the follwing methods to install and use this library:
+
+- **Package Manager:**
+
+    ```batch
+    PM> Install-Package TrayIcon
+    ```
+
+- **.NET CLI:**
+
+    ```batch
+    > dotnet add package TrayIcon
+    ```
 ----
 First you need to include namespace to your code or markup.
 
