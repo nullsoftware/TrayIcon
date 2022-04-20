@@ -131,9 +131,6 @@ using PropertyChanged;
 
 public class MainViewModel : ObservableObject
 {
-    [DoNotNotify]
-    private INotificationService NotificationService { get; set; }
-
     public bool IsSilentModeEnabled { get; set; }
 
     [DoNotNotify]
@@ -144,6 +141,9 @@ public class MainViewModel : ObservableObject
 
     [DoNotNotify]
     public ICommand CloseCommand { get; }
+    
+    [DoNotNotify]
+    private INotificationService NotificationService { get; set; }
 
     public MainViewModel()
     {
