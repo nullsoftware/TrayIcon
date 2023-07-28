@@ -36,7 +36,11 @@ namespace NullSoftware.ToolKit
     [DefaultEvent(nameof(Click))]
     public class TrayIcon : FrameworkElement, INotificationService, IDisposable
     {
-        #region Dependency Properties Registration
+        //
+        // [Dependency properties]
+        //
+
+        #region ShowTimeout
 
         /// <summary>
         /// Identifies the <see cref="ShowTimeout"/> dependency property.
@@ -47,218 +51,6 @@ namespace NullSoftware.ToolKit
                 typeof(ushort),
                 typeof(TrayIcon),
                 new FrameworkPropertyMetadata((ushort)10000));
-
-        /// <summary>
-        /// Identifies the <see cref="Title"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register(
-                nameof(Title), 
-                typeof(string),
-                typeof(TrayIcon), 
-                new FrameworkPropertyMetadata(OnTitleChanged));
-
-        /// <summary>
-        /// Identifies the <see cref="IconSource"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty IconSourceProperty =
-            DependencyProperty.Register(
-                nameof(IconSource), 
-                typeof(ImageSource), 
-                typeof(TrayIcon),
-                new FrameworkPropertyMetadata(OnIconSourceChanged));
-
-        /// <summary>
-        /// Identifies the <see cref="ClickCommand"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ClickCommandProperty =
-            DependencyProperty.Register(
-                nameof(ClickCommand), 
-                typeof(ICommand), 
-                typeof(TrayIcon),
-                new FrameworkPropertyMetadata());
-
-        /// <summary>
-        /// Identifies the <see cref="ClickCommandParameter"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ClickCommandParameterProperty =
-            DependencyProperty.Register(
-                nameof(ClickCommandParameter),
-                typeof(object),
-                typeof(TrayIcon),
-                new FrameworkPropertyMetadata());
-
-        /// <summary>
-        /// Identifies the <see cref="DoubleClickCommand"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty DoubleClickCommandProperty =
-            DependencyProperty.Register(
-                nameof(DoubleClickCommand),
-                typeof(ICommand),
-                typeof(TrayIcon),
-                new FrameworkPropertyMetadata());
-
-        /// <summary>
-        /// Identifies the <see cref="DoubleClickCommandParameter"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty DoubleClickCommandParameterProperty =
-            DependencyProperty.Register(
-                nameof(DoubleClickCommandParameter),
-                typeof(object),
-                typeof(TrayIcon),
-                new FrameworkPropertyMetadata());
-
-        /// <summary>
-        /// Identifies the <see cref="BalloonTipClickCommand"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty BalloonTipClickCommandProperty =
-            DependencyProperty.Register(
-                nameof(BalloonTipClickCommand),
-                typeof(ICommand),
-                typeof(TrayIcon),
-                new FrameworkPropertyMetadata());
-
-        /// <summary>
-        /// Identifies the <see cref="BalloonTipClickCommandParameter"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty BalloonTipClickCommandParameterProperty =
-            DependencyProperty.Register(
-                nameof(BalloonTipClickCommandParameter),
-                typeof(object),
-                typeof(TrayIcon),
-                new FrameworkPropertyMetadata());
-
-        /// <summary>
-        /// Identifies the <see cref="NotificationServiceMemberPath"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty NotificationServiceMemberPathProperty =
-           DependencyProperty.Register(
-               nameof(NotificationServiceMemberPath),
-               typeof(string),
-               typeof(TrayIcon),
-               new FrameworkPropertyMetadata(OnNotificationServiceMemberPathChanged));
-
-        /// <summary>
-        /// Identifies the NullSoftware.ToolKit.TrayIcon.IsDefault attached property.
-        /// </summary>
-        public static readonly DependencyProperty IsDefaultProperty =
-            DependencyProperty.RegisterAttached(
-               "IsDefault",
-               typeof(bool),
-               typeof(TrayIcon),
-               new FrameworkPropertyMetadata(false));
-
-        #endregion
-
-        #region Routed Events Registration
-
-        /// <summary>
-        /// Identifies the <see cref="Click"/> routed event.
-        /// </summary>
-        public static readonly RoutedEvent ClickEvent = 
-            EventManager.RegisterRoutedEvent(
-                nameof(Click),
-                RoutingStrategy.Bubble,
-                typeof(MouseButtonEventHandler),
-                typeof(TrayIcon));
-
-        /// <summary>
-        /// Identifies the <see cref="MouseDoubleClick"/> routed event.
-        /// </summary>
-        public static readonly RoutedEvent MouseDoubleClickEvent =
-            EventManager.RegisterRoutedEvent(
-                nameof(MouseDoubleClick),
-                RoutingStrategy.Bubble,
-                typeof(MouseButtonEventHandler),
-                typeof(TrayIcon));
-
-        /// <summary>
-        /// Identifies the <see cref="BalloonTipClick"/> routed event.
-        /// </summary>
-        public static readonly RoutedEvent BalloonTipClickEvent =
-            EventManager.RegisterRoutedEvent(
-                nameof(BalloonTipClick),
-                RoutingStrategy.Bubble,
-                typeof(RoutedEventHandler),
-                typeof(TrayIcon));
-
-        /// <summary>
-        /// Identifies the <see cref="BalloonTipShown"/> routed event.
-        /// </summary>
-        public static readonly RoutedEvent BalloonTipShownEvent =
-           EventManager.RegisterRoutedEvent(
-               nameof(BalloonTipShown),
-               RoutingStrategy.Bubble,
-               typeof(RoutedEventHandler),
-               typeof(TrayIcon));
-
-        /// <summary>
-        /// Identifies the <see cref="BalloonTipClosed"/> routed event.
-        /// </summary>
-        public static readonly RoutedEvent BalloonTipClosedEvent =
-           EventManager.RegisterRoutedEvent(
-               nameof(BalloonTipClosed),
-               RoutingStrategy.Bubble,
-               typeof(RoutedEventHandler),
-               typeof(TrayIcon));
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        /// Occurs when a <see cref="TrayIcon"/> is clicked.
-        /// </summary>
-        [Category("Behavior")]
-        public event MouseButtonEventHandler Click
-        {
-            add { AddHandler(ClickEvent, value); }
-            remove { RemoveHandler(ClickEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when a <see cref="TrayIcon"/> is double-clicked.
-        /// </summary>
-        [Category("Behavior")]
-        public event MouseButtonEventHandler MouseDoubleClick
-        {
-            add { AddHandler(MouseDoubleClickEvent, value); }
-            remove { RemoveHandler(MouseDoubleClickEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the balloon tip is clicked.
-        /// </summary>
-        [Category("Behavior")]
-        public event RoutedEventHandler BalloonTipClick
-        {
-            add { AddHandler(BalloonTipClickEvent, value); }
-            remove { RemoveHandler(BalloonTipClickEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the balloon tip is displayed on the screen.
-        /// </summary>
-        [Category("Behavior")]
-        public event RoutedEventHandler BalloonTipShown
-        {
-            add { AddHandler(BalloonTipShownEvent, value); }
-            remove { RemoveHandler(BalloonTipShownEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the balloon tip is closed by the user.
-        /// </summary>
-        [Category("Behavior")]
-        public event RoutedEventHandler BalloonTipClosed
-        {
-            add { AddHandler(BalloonTipClosedEvent, value); }
-            remove { RemoveHandler(BalloonTipClosedEvent, value); }
-        }
-
-        #endregion
-
-        #region Properties
 
         /// <summary>
         /// Gets or sets the time period, in milliseconds, the balloon tip should display.
@@ -272,6 +64,20 @@ namespace NullSoftware.ToolKit
             get { return (ushort)GetValue(ShowTimeoutProperty); }
             set { SetValue(ShowTimeoutProperty, value); }
         }
+
+        #endregion
+
+        #region Title
+
+        /// <summary>
+        /// Identifies the <see cref="Title"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.Register(
+                nameof(Title), 
+                typeof(string),
+                typeof(TrayIcon), 
+                new FrameworkPropertyMetadata(OnTitleChanged));
 
         /// <summary>
         /// Gets or sets the ToolTip text displayed
@@ -288,6 +94,20 @@ namespace NullSoftware.ToolKit
             set { SetValue(TitleProperty, value); }
         }
 
+        #endregion
+
+        #region IconSource
+
+        /// <summary>
+        /// Identifies the <see cref="IconSource"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IconSourceProperty =
+            DependencyProperty.Register(
+                nameof(IconSource), 
+                typeof(ImageSource), 
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata(OnIconSourceChanged));
+
         /// <summary>
         /// Gets or sets the icon displayed in tray.
         /// </summary>
@@ -298,6 +118,20 @@ namespace NullSoftware.ToolKit
             get { return (ImageSource)GetValue(IconSourceProperty); }
             set { SetValue(IconSourceProperty, value); }
         }
+
+        #endregion
+
+        #region ClickCommand
+
+        /// <summary>
+        /// Identifies the <see cref="ClickCommand"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ClickCommandProperty =
+            DependencyProperty.Register(
+                nameof(ClickCommand), 
+                typeof(ICommand), 
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata());
 
         /// <summary>
         /// Gets or sets the command to invoke when this Tray Icon is pressed.
@@ -310,6 +144,20 @@ namespace NullSoftware.ToolKit
             set { SetValue(ClickCommandProperty, value); }
         }
 
+        #endregion
+
+        #region ClickCommandParameter
+
+        /// <summary>
+        /// Identifies the <see cref="ClickCommandParameter"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ClickCommandParameterProperty =
+            DependencyProperty.Register(
+                nameof(ClickCommandParameter),
+                typeof(object),
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata());
+
         /// <summary>
         /// Gets or sets the parameter to pass to the <see cref="ClickCommand"/> property.
         /// </summary>
@@ -320,6 +168,20 @@ namespace NullSoftware.ToolKit
             get { return GetValue(ClickCommandParameterProperty); }
             set { SetValue(ClickCommandParameterProperty, value); }
         }
+
+        #endregion
+
+        #region DoubleClickCommand
+
+        /// <summary>
+        /// Identifies the <see cref="DoubleClickCommand"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty DoubleClickCommandProperty =
+            DependencyProperty.Register(
+                nameof(DoubleClickCommand),
+                typeof(ICommand),
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata());
 
         /// <summary>
         /// Gets or sets the command to invoke when this Tray Icon is clicked two or more times.
@@ -332,6 +194,20 @@ namespace NullSoftware.ToolKit
             set { SetValue(DoubleClickCommandProperty, value); }
         }
 
+        #endregion
+
+        #region DoubleClickCommandParameter
+
+        /// <summary>
+        /// Identifies the <see cref="DoubleClickCommandParameter"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty DoubleClickCommandParameterProperty =
+            DependencyProperty.Register(
+                nameof(DoubleClickCommandParameter),
+                typeof(object),
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata());
+
         /// <summary>
         /// Gets or sets the parameter to pass to the <see cref="DoubleClickCommand"/> property.
         /// </summary>
@@ -342,6 +218,20 @@ namespace NullSoftware.ToolKit
             get { return GetValue(DoubleClickCommandParameterProperty); }
             set { SetValue(DoubleClickCommandParameterProperty, value); }
         }
+
+        #endregion
+
+        #region BalloonTipClickCommand
+
+        /// <summary>
+        /// Identifies the <see cref="BalloonTipClickCommand"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty BalloonTipClickCommandProperty =
+            DependencyProperty.Register(
+                nameof(BalloonTipClickCommand),
+                typeof(ICommand),
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata());
 
         /// <summary>
         /// Gets or sets the command to invoke when balloon tip is pressed.
@@ -354,6 +244,20 @@ namespace NullSoftware.ToolKit
             set { SetValue(BalloonTipClickCommandProperty, value); }
         }
 
+        #endregion
+
+        #region BalloonTipClickCommandParameter
+
+        /// <summary>
+        /// Identifies the <see cref="BalloonTipClickCommandParameter"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty BalloonTipClickCommandParameterProperty =
+            DependencyProperty.Register(
+                nameof(BalloonTipClickCommandParameter),
+                typeof(object),
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata());
+
         /// <summary>
         /// Gets or sets the parameter to pass to the <see cref="BalloonTipClickCommand"/> property.
         /// </summary>
@@ -364,6 +268,20 @@ namespace NullSoftware.ToolKit
             get { return GetValue(BalloonTipClickCommandParameterProperty); }
             set { SetValue(BalloonTipClickCommandParameterProperty, value); }
         }
+
+        #endregion
+
+        #region NotificationServiceMemberPath
+
+        /// <summary>
+        /// Identifies the <see cref="NotificationServiceMemberPath"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty NotificationServiceMemberPathProperty =
+           DependencyProperty.Register(
+               nameof(NotificationServiceMemberPath),
+               typeof(string),
+               typeof(TrayIcon),
+               new FrameworkPropertyMetadata(OnNotificationServiceMemberPathChanged));
 
         /// <summary>
         /// Gets or sets path to <see cref="INotificationService"/> property
@@ -380,6 +298,175 @@ namespace NullSoftware.ToolKit
             get { return (string)GetValue(NotificationServiceMemberPathProperty); }
             set { SetValue(NotificationServiceMemberPathProperty, value); }
         }
+
+        #endregion
+
+        #region IsDefault attached property
+
+        /// <summary>
+        /// Identifies the NullSoftware.ToolKit.TrayIcon.IsDefault attached property.
+        /// </summary>
+        public static readonly DependencyProperty IsDefaultProperty =
+            DependencyProperty.RegisterAttached(
+               "IsDefault",
+               typeof(bool),
+               typeof(TrayIcon),
+               new FrameworkPropertyMetadata(false));
+
+        /// <summary>
+        /// Gets the value of the NullSoftware.ToolKit.TrayIcon.IsDefault 
+        /// attached property from a given <see cref="DependencyObject"/>.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns>
+        /// The value of the NullSoftware.ToolKit.TrayIcon.IsDefault attached property.
+        /// </returns>
+        public static bool GetIsDefault(DependencyObject element)
+        {
+            return (bool)element.GetValue(IsDefaultProperty);
+        }
+
+        /// <summary>
+        /// Sets the value of the NullSoftware.ToolKit.TrayIcon.IsDefault 
+        /// attached property to a given <see cref="DependencyObject"/>.
+        /// </summary>
+        /// <param name="element">The element on which to set the attached property.</param>
+        /// <param name="value">The property value to set.</param>
+        public static void SetIsDefault(DependencyObject element, bool value)
+        {
+            element.SetValue(IsDefaultProperty, value);
+        }
+
+        #endregion
+
+
+        //
+        // [Routed Events]
+        //
+
+        #region Click
+
+        /// <summary>
+        /// Identifies the <see cref="Click"/> routed event.
+        /// </summary>
+        public static readonly RoutedEvent ClickEvent = 
+            EventManager.RegisterRoutedEvent(
+                nameof(Click),
+                RoutingStrategy.Bubble,
+                typeof(MouseButtonEventHandler),
+                typeof(TrayIcon));
+
+        /// <summary>
+        /// Occurs when a <see cref="TrayIcon"/> is clicked.
+        /// </summary>
+        [Category("Behavior")]
+        public event MouseButtonEventHandler Click
+        {
+            add { AddHandler(ClickEvent, value); }
+            remove { RemoveHandler(ClickEvent, value); }
+        }
+
+        #endregion
+
+        #region MouseDoubleClick
+
+        /// <summary>
+        /// Identifies the <see cref="MouseDoubleClick"/> routed event.
+        /// </summary>
+        public static readonly RoutedEvent MouseDoubleClickEvent =
+            EventManager.RegisterRoutedEvent(
+                nameof(MouseDoubleClick),
+                RoutingStrategy.Bubble,
+                typeof(MouseButtonEventHandler),
+                typeof(TrayIcon));
+
+        /// <summary>
+        /// Occurs when a <see cref="TrayIcon"/> is double-clicked.
+        /// </summary>
+        [Category("Behavior")]
+        public event MouseButtonEventHandler MouseDoubleClick
+        {
+            add { AddHandler(MouseDoubleClickEvent, value); }
+            remove { RemoveHandler(MouseDoubleClickEvent, value); }
+        }
+
+        #endregion
+
+        #region BalloonTipClick
+
+        /// <summary>
+        /// Identifies the <see cref="BalloonTipClick"/> routed event.
+        /// </summary>
+        public static readonly RoutedEvent BalloonTipClickEvent =
+            EventManager.RegisterRoutedEvent(
+                nameof(BalloonTipClick),
+                RoutingStrategy.Bubble,
+                typeof(RoutedEventHandler),
+                typeof(TrayIcon));
+
+        /// <summary>
+        /// Occurs when the balloon tip is clicked.
+        /// </summary>
+        [Category("Behavior")]
+        public event RoutedEventHandler BalloonTipClick
+        {
+            add { AddHandler(BalloonTipClickEvent, value); }
+            remove { RemoveHandler(BalloonTipClickEvent, value); }
+        }
+
+        #endregion
+
+        #region BalloonTipShown
+
+        /// <summary>
+        /// Identifies the <see cref="BalloonTipShown"/> routed event.
+        /// </summary>
+        public static readonly RoutedEvent BalloonTipShownEvent =
+           EventManager.RegisterRoutedEvent(
+               nameof(BalloonTipShown),
+               RoutingStrategy.Bubble,
+               typeof(RoutedEventHandler),
+               typeof(TrayIcon));
+
+        /// <summary>
+        /// Occurs when the balloon tip is displayed on the screen.
+        /// </summary>
+        [Category("Behavior")]
+        public event RoutedEventHandler BalloonTipShown
+        {
+            add { AddHandler(BalloonTipShownEvent, value); }
+            remove { RemoveHandler(BalloonTipShownEvent, value); }
+        }
+
+        #endregion
+
+        #region BalloonTipClosed
+
+        /// <summary>
+        /// Identifies the <see cref="BalloonTipClosed"/> routed event.
+        /// </summary>
+        public static readonly RoutedEvent BalloonTipClosedEvent =
+           EventManager.RegisterRoutedEvent(
+               nameof(BalloonTipClosed),
+               RoutingStrategy.Bubble,
+               typeof(RoutedEventHandler),
+               typeof(TrayIcon));
+
+        /// <summary>
+        /// Occurs when the balloon tip is closed by the user.
+        /// </summary>
+        [Category("Behavior")]
+        public event RoutedEventHandler BalloonTipClosed
+        {
+            add { AddHandler(BalloonTipClosedEvent, value); }
+            remove { RemoveHandler(BalloonTipClosedEvent, value); }
+        }
+
+        #endregion
+
+        
+
+        #region Properties
 
         /// <summary>
         /// Wrapped NotifyIcon.
@@ -433,30 +520,6 @@ namespace NullSoftware.ToolKit
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Gets the value of the NullSoftware.ToolKit.TrayIcon.IsDefault 
-        /// attached property from a given <see cref="DependencyObject"/>.
-        /// </summary>
-        /// <param name="element"></param>
-        /// <returns>
-        /// The value of the NullSoftware.ToolKit.TrayIcon.IsDefault attached property.
-        /// </returns>
-        public static bool GetIsDefault(DependencyObject element)
-        {
-            return (bool)element.GetValue(IsDefaultProperty);
-        }
-
-        /// <summary>
-        /// Sets the value of the NullSoftware.ToolKit.TrayIcon.IsDefault 
-        /// attached property to a given <see cref="DependencyObject"/>.
-        /// </summary>
-        /// <param name="element">The element on which to set the attached property.</param>
-        /// <param name="value">The property value to set.</param>
-        public static void SetIsDefault(DependencyObject element, bool value)
-        {
-            element.SetValue(IsDefaultProperty, value);
-        }
 
         /// <inheritdoc/>
         public void Notify(string title, string text)
