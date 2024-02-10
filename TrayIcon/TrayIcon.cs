@@ -724,7 +724,7 @@ namespace NullSoftware.ToolKit
                     NotifyIcon.ContextMenu = GenerateContextMenu(ContextMenu);
                     return;
 #else
-                    throw new NotSupportedException("ContextMenu is not supported in current .NET version.");
+                    throw new NotSupportedException("'System.Windows.Forms.ContextMenu' is not supported in current .NET version. Use 'System.Windows.Forms.ContextMenuStrip' instead.");
 #endif
                 default:
                     NotifyIcon.ContextMenuStrip = GenerateContextMenuStrip(ContextMenu);
