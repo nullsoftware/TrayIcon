@@ -722,10 +722,10 @@ namespace NullSoftware.ToolKit
                 case ContextMenuVariation.ContextMenu:
 #if !NETCOREAPP3_1_OR_GREATER
                     NotifyIcon.ContextMenu = GenerateContextMenu(ContextMenu);
+                    return;
 #else
                     throw new NotSupportedException("ContextMenu is not supported in current .NET version.");
 #endif
-                    return;
                 default:
                     NotifyIcon.ContextMenuStrip = GenerateContextMenuStrip(ContextMenu);
                     return;
