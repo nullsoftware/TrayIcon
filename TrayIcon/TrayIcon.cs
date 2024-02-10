@@ -713,7 +713,7 @@ namespace NullSoftware.ToolKit
         }
 
         /// <summary>
-        /// Converts <see cref="WPFContextMenu"/> to Winndows Forms variation.
+        /// Converts <see cref="WPFContextMenu"/> to Windows Forms variation.
         /// </summary>
         protected virtual void GenerateContextMenu()
         {
@@ -724,7 +724,7 @@ namespace NullSoftware.ToolKit
                     NotifyIcon.ContextMenu = GenerateContextMenu(ContextMenu);
                     return;
 #else
-                    throw new NotSupportedException("'System.Windows.Forms.ContextMenu' is not supported in current .NET version. Use 'System.Windows.Forms.ContextMenuStrip' instead.");
+                    throw new NotSupportedException("'System.Windows.Forms.ContextMenu' is not supported in current .NET version. Use 'ContextMenuVariation.ContextMenuStrip' instead.");
 #endif
                 default:
                     NotifyIcon.ContextMenuStrip = GenerateContextMenuStrip(ContextMenu);
