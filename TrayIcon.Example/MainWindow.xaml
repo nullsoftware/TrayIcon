@@ -22,8 +22,10 @@
                        NotificationServiceMemberPath="NotificationService">
             <icon:TrayIcon.ContextMenu>
                 <!--This context menu will be converted to System.Windows.Forms.ContextMenu-->
-                <ContextMenu>
-                    <MenuItem Header="Notify" Command="{Binding SayHelloCommand}" icon:TrayIcon.IsDefault="True"/>
+                <ContextMenu StaysOpen="False">
+                    <MenuItem Header="Notify">
+                        <MenuItem Header="Say Hello" Command="{Binding SayHelloCommand}" icon:TrayIcon.IsDefault="True"/>
+                    </MenuItem>
                     <Separator/>
                     <MenuItem Header="_Silent Mode" IsCheckable="True" IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Separator/>
@@ -45,7 +47,13 @@
                     Padding="10, 3"
                     MinWidth="86"
                     Command="{Binding SayHelloCommand}"
-                    Content="Notify"/>
+                    Content="Notify">
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Hello"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

@@ -67,6 +67,38 @@ namespace NullSoftware.ToolKit
 
         #endregion
 
+        #region ContextMenuVariation
+
+#if !NETCOREAPP3_1_OR_GREATER
+        private const ContextMenuVariation DefaultVariation = ContextMenuVariation.ContextMenu;
+#else
+        private const ContextMenuVariation DefaultVariation = ContextMenuVariation.ContextMenuStrip;
+#endif
+
+        /// <summary>
+        /// Identifies the <see cref="ContextMenuVariation"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ContextMenuVariationProperty =
+            DependencyProperty.Register(
+                nameof(ContextMenuVariation),
+                typeof(ContextMenuVariation),
+                typeof(TrayIcon),
+                new FrameworkPropertyMetadata(DefaultVariation, OnContextMenuVariationChanged));
+
+        /// <summary>
+        /// Gets or sets context menu variation. 
+        /// This property affects context menu generation.
+        /// </summary>
+        [Category("Common")]
+        [Description("Gets or sets context menu variation.")]
+        public ContextMenuVariation ContextMenuVariation
+        {
+            get { return (ContextMenuVariation)GetValue(ContextMenuVariationProperty); }
+            set { SetValue(ContextMenuVariationProperty, value); }
+        }
+
+        #endregion
+
         #region Title
 
         /// <summary>
@@ -572,6 +604,15 @@ namespace NullSoftware.ToolKit
             }
         }
 
+        private static void OnContextMenuVariationChanged(
+            DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            TrayIcon trayIcon = (TrayIcon)d;
+
+            if (trayIcon.IsInitialized && trayIcon.IsLoaded)
+                trayIcon.GenerateContextMenu();
+        }
+
         private static void OnTitleChanged(
             DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -615,11 +656,7 @@ namespace NullSoftware.ToolKit
             if (trayIcon.NotifyIcon == null)
                 return;
 
-            trayIcon.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                trayIcon.NotifyIcon.ContextMenu = trayIcon.GenerateContextMenu((WPFContextMenu)e.NewValue);
-            }),
-            DispatcherPriority.DataBind);
+            trayIcon.Dispatcher.BeginInvoke(new Action(trayIcon.GenerateContextMenu), DispatcherPriority.DataBind);
         }
 
         private static void OnVisibilityChanged(
@@ -675,6 +712,30 @@ namespace NullSoftware.ToolKit
             };
         }
 
+        /// <summary>
+        /// Converts <see cref="WPFContextMenu"/> to Winndows Forms variation.
+        /// </summary>
+        protected virtual void GenerateContextMenu()
+        {
+            switch (ContextMenuVariation)
+            {
+                case ContextMenuVariation.ContextMenu:
+#if !NETCOREAPP3_1_OR_GREATER
+                    NotifyIcon.ContextMenu = GenerateContextMenu(ContextMenu);
+#else
+                    throw new NotSupportedException("ContextMenu is not supported in current .NET version.");
+#endif
+                    return;
+                default:
+                    NotifyIcon.ContextMenuStrip = GenerateContextMenuStrip(ContextMenu);
+                    return;
+            }  
+        }
+
+        #region Context Menu
+
+#if !NETCOREAPP3_1_OR_GREATER
+
         private ContextMenu GenerateContextMenu(WPFContextMenu original)
         {
             if (original == null || original.Items.Count == 0)
@@ -712,7 +773,7 @@ namespace NullSoftware.ToolKit
         private MenuItem LinkMenuItem(WPFMenuItem item)
         {
             MenuItem result = new MenuItem(GetHeader(item));
-
+            
             // needed to change menu item header dynamically
             DependencyPropertyDescriptor.FromProperty(
                 WPFMenuItem.HeaderProperty,
@@ -729,7 +790,7 @@ namespace NullSoftware.ToolKit
             result.DefaultItem = GetIsDefault(item);
 
             if (item.Items.Count != 0)
-            {
+            {               
                 result.MenuItems.AddRange(GenerateMenuItems(item.Items));
 
                 return result;
@@ -750,6 +811,94 @@ namespace NullSoftware.ToolKit
 
             return result;
         }
+
+#endif
+
+        #endregion
+
+        #region Context Menu Strip
+
+        private ContextMenuStrip GenerateContextMenuStrip(WPFContextMenu original)
+        {
+            if (original == null || original.Items.Count == 0)
+                return null;
+
+            original.SetBinding(
+                FrameworkElement.DataContextProperty,
+                new WPFBinding(nameof(DataContext)) { Source = this });
+
+            var result = new ContextMenuStrip();
+
+            result.Items.AddRange(GenerateStripMenuItems(original.Items));
+            //result.Renderer = new CustomRender.ModernRenderer();
+
+            return result;
+        }
+
+        private ToolStripItem[] GenerateStripMenuItems(ItemCollection original)
+        {
+            List<ToolStripItem> result = new List<ToolStripItem>();
+
+            foreach (FrameworkElement item in original)
+            {
+                switch (item)
+                {
+                    case WPFMenuItem menuItem:
+                        result.Add(LinkStripMenuItem(menuItem));
+                        break;
+                    case WPFSeparator separator:
+                        result.Add(new Controls.UToolStripSeparator());
+                        break;
+                    default:
+                        throw new NotSupportedException($"Type '{item.GetType()}' not supported.");
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        private ToolStripMenuItem LinkStripMenuItem(WPFMenuItem item)
+        {
+            ToolStripMenuItem result = new ToolStripMenuItem(GetHeader(item));
+
+            // needed to change menu item header dynamically
+            DependencyPropertyDescriptor.FromProperty(
+                WPFMenuItem.HeaderProperty,
+                typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Text = GetHeader(item)));
+
+            DependencyPropertyDescriptor.FromProperty(
+                WPFMenuItem.VisibilityProperty,
+                typeof(WPFMenuItem)).AddValueChanged(item, new EventHandler((sender, e) => result.Visible = item.Visibility == Visibility.Visible));
+
+            result.Visible = item.Visibility == Visibility.Visible;
+            result.Enabled = item.IsEnabled;
+            item.IsEnabledChanged += (sender, e) => result.Enabled = (bool)e.NewValue;
+
+            if (item.Items.Count != 0)
+            {
+                result.DropDownItems.AddRange(GenerateStripMenuItems(item.Items));
+
+                return result;
+            }
+
+            if (item.IsCheckable)
+            {
+                item.AddHandler(WPFMenuItem.CheckedEvent, new RoutedEventHandler((sender, e) => result.Checked = true));
+                item.AddHandler(WPFMenuItem.UncheckedEvent, new RoutedEventHandler((sender, e) => result.Checked = false));
+
+                result.Checked = item.IsChecked;
+            }
+
+            MenuItemAutomationPeer peer = new MenuItemAutomationPeer(item);
+            IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+
+            result.Click += (sender, e) => invokeProv.Invoke();
+
+            return result;
+        }
+
+        #endregion
+
 
         private void OnNotifyIconBalloonTipClicked(object sender, EventArgs e)
         {
@@ -808,9 +957,9 @@ namespace NullSoftware.ToolKit
             RaiseEvent(routedEvent);
         }
 
-        #endregion
+#endregion
     }
-
+    
 #pragma warning restore CS0612 // Type or member is obsolete
 
 }
