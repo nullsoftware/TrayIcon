@@ -531,7 +531,6 @@ namespace NullSoftware.ToolKit
             };
 
             // event subscription
-            NotifyIcon.Disposed += (sender, e) => NotifyIcon = null;
             NotifyIcon.BalloonTipClicked += OnNotifyIconBalloonTipClicked;
             NotifyIcon.BalloonTipShown += OnNotifyIconBalloonTipShown;
             NotifyIcon.BalloonTipClosed += OnNotifyIconBalloonTipClosed;
@@ -540,15 +539,7 @@ namespace NullSoftware.ToolKit
             NotifyIcon.MouseDown += OnNotifyIconMouseDown;
             NotifyIcon.MouseUp += OnNotifyIconMouseUp;
             NotifyIcon.MouseMove += OnNotifyIconMouseMove;
-            WPFApplication.Current.Exit += (sender, e) => NotifyIcon?.Dispose();
-        }
-
-        /// <summary>
-        /// Disposes inner NotifyIcon.
-        /// </summary>
-        ~TrayIcon()
-        {
-            Dispose();
+            WPFApplication.Current.Exit += (sender, e) => NotifyIcon.Dispose();
         }
 
         #endregion
@@ -568,9 +559,13 @@ namespace NullSoftware.ToolKit
         }
 
         /// <inheritdoc/>
-        public void Dispose()
+        public virtual void Dispose()
         {
-            NotifyIcon?.Dispose();
+#if !NETCOREAPP3_1_OR_GREATER
+            DisposeContextMenu();
+#endif
+            DisposeContextMenuStrip();
+            NotifyIcon.Dispose();
         }
 
         /// <summary>
