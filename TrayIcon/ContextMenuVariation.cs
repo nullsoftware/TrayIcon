@@ -16,7 +16,7 @@ namespace NullSoftware.ToolKit
         /// </summary>
         /// <remarks>
         /// This options will no longer work in new .NET versions starting from .NET Core 3.1 due to deprecation. 
-        /// See more at <see href="https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.contextmenu">documentation page</see>.
+        /// See more at the <see href="https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.contextmenu">documentation page</see>.
         /// </remarks>
         ContextMenu,
 

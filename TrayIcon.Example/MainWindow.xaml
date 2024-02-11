@@ -22,7 +22,7 @@
                        NotificationServiceMemberPath="NotificationService">
             <icon:TrayIcon.ContextMenu>
                 <!--This context menu will be converted to System.Windows.Forms.ContextMenu-->
-                <ContextMenu StaysOpen="False">
+                <ContextMenu>
                     <MenuItem Header="Notify">
                         <MenuItem Header="Say Hello" Command="{Binding SayHelloCommand}" icon:TrayIcon.IsDefault="True"/>
                     </MenuItem>
