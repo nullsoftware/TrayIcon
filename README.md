@@ -67,8 +67,13 @@ notifyService.Notify("Greetings", "Hello World!", NotificationType.Information);
 **Note:** `INotificationService` can be obtained from XAML by using `NotificationServiceMemberPath`.
 It injects `INotificationService` to specified DataContext property.
 
-----
-Full Example:
+### Backward compatibility
+To support latest .NET versions was added `ContextMenuVariation` property to `TrayIcon`.\
+It allows to switch beetwen `System.Windows.Forms.ContextMenu` or `System.Windows.Forms.ContextMenuStrip`.\
+**Warning:** .NET Core 3.1 and later versions don't support `System.Windows.Forms.ContextMenu`.
+See more at the [documentation page](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.contextmenu). 
+
+## Full Example
 ```XAML
 <Window x:Class="TrayIcon.Example.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
