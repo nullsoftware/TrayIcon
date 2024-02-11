@@ -954,7 +954,7 @@ namespace NullSoftware.ToolKit
                         result.Add(LinkStripMenuItem(menuItem));
                         break;
                     case WPFSeparator separator:
-                        result.Add(new Controls.UToolStripSeparator());
+                        result.Add(new ToolStripSeparator());
                         break;
                     default:
                         throw new NotSupportedException($"Type '{item.GetType()}' not supported.");
