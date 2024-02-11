@@ -6,17 +6,27 @@
         xmlns:local="clr-namespace:Example"
         xmlns:vm="clr-namespace:Example.ViewModels"
         xmlns:icon="https://github.com/nullsoftware/TrayIcon"
+        xmlns:s="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="450" Width="800"
         Icon="MainIcon.ico">
+    <Window.Resources>
+        <ObjectDataProvider x:Key="ContextMenuVariations" MethodName="GetValues" ObjectType="{x:Type s:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="icon:ContextMenuVariation"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+    
     <Window.DataContext>
-        <vm:MainViewModel/>
+        <vm:MainViewModel />
     </Window.DataContext>
 
     <!--Here you can place your icons-->
     <icon:TrayIconHandlers.TrayIcons>
-        <icon:TrayIcon Title="My Application"
+        <icon:TrayIcon x:Name="MainTrayIcon"
+                       Title="My Application"
                        IconSource="MainIcon.ico"
                        DoubleClickCommand="{Binding MinimazeCommand}"
                        NotificationServiceMemberPath="NotificationService">
@@ -43,7 +53,7 @@
             <CheckBox VerticalAlignment="Center"
                       IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                       Content="Silent Mode"/>
-            <Button Margin="20, 0, 0, 0"
+            <Button Margin="20, 0, 20, 0"
                     Padding="10, 3"
                     MinWidth="86"
                     Command="{Binding SayHelloCommand}"
@@ -54,6 +64,12 @@
                     </ContextMenu>
                 </Button.ContextMenu>
             </Button>
+            <Label VerticalAlignment="Center" 
+                   Content="Variation:"/>
+            <ComboBox Width="160" 
+                      VerticalAlignment="Center"
+                      ItemsSource="{Binding Source={StaticResource ContextMenuVariations}}" 
+                      SelectedItem="{Binding ElementName=MainTrayIcon, Path=ContextMenuVariation, Mode=TwoWay}" />
         </StackPanel>
     </Grid>
 </Window>
