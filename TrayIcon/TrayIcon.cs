@@ -892,7 +892,7 @@ namespace NullSoftware.ToolKit
         private void OnWPFMenuItemUnchecked(object sender, RoutedEventArgs e)
         {
             var item = (WPFMenuItem)sender;
-            _menuItemMapping[item].Checked = true;
+            _menuItemMapping[item].Checked = false;
         }
 
         private void OnMenuItemClick(object sender, EventArgs e)
@@ -1065,7 +1065,7 @@ namespace NullSoftware.ToolKit
         private void OnStripWPFMenuItemUnchecked(object sender, RoutedEventArgs e)
         {
             var item = (WPFMenuItem)sender;
-            _toolStripMenuItemMapping[item].Checked = true;
+            _toolStripMenuItemMapping[item].Checked = false;
         }
 
         private void OnToolStripMenuItemClick(object sender, EventArgs e)
