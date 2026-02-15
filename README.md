@@ -1,5 +1,3 @@
-[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner-direct-single.svg)](https://stand-with-ukraine.pp.ua)
-
 [![](https://img.shields.io/nuget/vpre/TrayIcon)](https://www.nuget.org/packages/TrayIcon/)
 [![](https://img.shields.io/nuget/dt/TrayIcon)](https://www.nuget.org/packages/TrayIcon/)
 
@@ -159,3 +157,19 @@ public class MainViewModel : ObservableObject
 }
 ```
 **Note:** in ViewModel was used [PropertyChanged.Fody](https://github.com/Fody/PropertyChanged) plugin, to simplify usage of `INotifyPropertyChanged`.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Credits
+
+Developed by [Null Software](https://github.com/nullsoftware)
+
+## Repository
+
+[https://github.com/nullsoftware/TrayIcon](https://github.com/nullsoftware/TrayIcon)
