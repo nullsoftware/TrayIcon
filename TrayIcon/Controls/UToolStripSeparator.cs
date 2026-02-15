@@ -6,19 +6,19 @@ using System.Windows.Forms;
 
 namespace NullSoftware.ToolKit.Controls
 {
-    internal class UToolStripSeparator : ToolStripSeparator
-    {
-        public int Spacing { get; set; } = 3;
+    //internal class UToolStripSeparator : ToolStripSeparator
+    //{
+    //    public int Spacing { get; set; } = 3;
 
-        protected override Size DefaultSize => new Size(6, Spacing);
+    //    protected override Size DefaultSize => new Size(6, Spacing);
 
-        public override Size GetPreferredSize(Size constrainingSize)
-        {
-            constrainingSize = base.GetPreferredSize(constrainingSize);
-            constrainingSize.Height = Spacing;
+    //    public override Size GetPreferredSize(Size constrainingSize)
+    //    {
+    //        constrainingSize = base.GetPreferredSize(constrainingSize);
+    //        constrainingSize.Height = Spacing;
 
-            return constrainingSize;
-        }
+    //        return constrainingSize;
+    //    }
 
-    }
+    //}
 }
