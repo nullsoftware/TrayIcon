@@ -32,10 +32,16 @@ namespace NullSoftware.ToolKit
     [DefaultEvent(nameof(Click))]
     public class TrayIcon : FrameworkElement, INotificationService, IDisposable
     {
+        private const ushort DefaultShowTimeoutMs = 10000;
+
 #if !NETCOREAPP3_1_OR_GREATER
         private readonly Dictionary<WPFMenuItem, MenuItem> _menuItemMapping = new Dictionary<WPFMenuItem, MenuItem>();
 #endif
         private readonly Dictionary<WPFMenuItem, ToolStripMenuItem> _toolStripMenuItemMapping = new Dictionary<WPFMenuItem, ToolStripMenuItem>();
+
+        private ExitEventHandler _applicationExitHandler;
+        private Icon _currentIcon;
+        private bool _disposed;
 
 
         //
@@ -52,14 +58,14 @@ namespace NullSoftware.ToolKit
                 nameof(ShowTimeout),
                 typeof(ushort),
                 typeof(TrayIcon),
-                new FrameworkPropertyMetadata((ushort)10000));
+                new FrameworkPropertyMetadata(DefaultShowTimeoutMs));
 
         /// <summary>
         /// Gets or sets the time period, in milliseconds, the balloon tip should display.
         /// This parameter is deprecated as of Windows Vista.
         /// Notification display times are now based on system accessibility settings.
         /// </summary>
-        [Obsolete]
+        [Obsolete("This parameter is deprecated as of Windows Vista. Notification display times are now based on system accessibility settings.")]
         [Description("Gets or sets the time period, in milliseconds, the balloon tip should display. This parameter is deprecated as of Windows Vista.")]
         public ushort ShowTimeout
         {
@@ -523,9 +529,12 @@ namespace NullSoftware.ToolKit
         public TrayIcon()
         {
             // properties initialization
+            var entryAssembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+            _currentIcon = Icon.ExtractAssociatedIcon(entryAssembly.Location);
+
             NotifyIcon = new NotifyIcon()
             {
-                Icon = Icon.ExtractAssociatedIcon(Assembly.GetEntryAssembly().Location),
+                Icon = _currentIcon,
                 Visible = Visibility == Visibility.Visible,
                 Text = Title
             };
@@ -539,7 +548,9 @@ namespace NullSoftware.ToolKit
             NotifyIcon.MouseDown += OnNotifyIconMouseDown;
             NotifyIcon.MouseUp += OnNotifyIconMouseUp;
             NotifyIcon.MouseMove += OnNotifyIconMouseMove;
-            WPFApplication.Current.Exit += (sender, e) => NotifyIcon.Dispose();
+
+            _applicationExitHandler = (sender, e) => Dispose();
+            WPFApplication.Current.Exit += _applicationExitHandler;
         }
 
         #endregion
@@ -559,13 +570,54 @@ namespace NullSoftware.ToolKit
         }
 
         /// <inheritdoc/>
-        public virtual void Dispose()
+        public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="TrayIcon"/> and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                // Unsubscribe from application exit event
+                if (WPFApplication.Current != null && _applicationExitHandler != null)
+                {
+                    WPFApplication.Current.Exit -= _applicationExitHandler;
+                }
+
+                // Dispose context menus
 #if !NETCOREAPP3_1_OR_GREATER
-            DisposeContextMenu();
+                DisposeContextMenu();
 #endif
-            DisposeContextMenuStrip();
-            NotifyIcon.Dispose();
+                DisposeContextMenuStrip();
+
+                // Dispose NotifyIcon
+                if (NotifyIcon != null)
+                {
+                    NotifyIcon.BalloonTipClicked -= OnNotifyIconBalloonTipClicked;
+                    NotifyIcon.BalloonTipShown -= OnNotifyIconBalloonTipShown;
+                    NotifyIcon.BalloonTipClosed -= OnNotifyIconBalloonTipClosed;
+                    NotifyIcon.MouseClick -= OnNotifyIconMouseClick;
+                    NotifyIcon.MouseDoubleClick -= OnNotifyIconMouseDoubleClick;
+                    NotifyIcon.MouseDown -= OnNotifyIconMouseDown;
+                    NotifyIcon.MouseUp -= OnNotifyIconMouseUp;
+                    NotifyIcon.MouseMove -= OnNotifyIconMouseMove;
+                    NotifyIcon.Dispose();
+                }
+
+                // Dispose current icon
+                _currentIcon?.Dispose();
+            }
+
+            _disposed = true;
         }
 
         /// <summary>
@@ -631,17 +683,25 @@ namespace NullSoftware.ToolKit
 
             if (trayIcon.IconSource != null)
             {
+                Icon newIcon = null;
+
                 switch (trayIcon.IconSource)
                 {
                     case BitmapFrame frame:
-                        trayIcon.NotifyIcon.Icon = new Icon(WPFApplication.GetResourceStream(new Uri(frame.Decoder.ToString())).Stream, 16, 16);
+                        newIcon = new Icon(WPFApplication.GetResourceStream(new Uri(frame.Decoder.ToString())).Stream, 16, 16);
                         break;
                     case BitmapImage bitmapImg:
-                        trayIcon.NotifyIcon.Icon = new Icon(bitmapImg.StreamSource, 16, 16);
+                        newIcon = new Icon(bitmapImg.StreamSource, 16, 16);
                         break;
                     default:
                         throw new NotSupportedException("Icon Source supports only BitmapFrame or BitmapImage.");
                 }
+
+                // Dispose old icon before replacing
+                var oldIcon = trayIcon._currentIcon;
+                trayIcon._currentIcon = newIcon;
+                trayIcon.NotifyIcon.Icon = newIcon;
+                oldIcon?.Dispose();
             }
         }
 
@@ -1083,7 +1143,10 @@ namespace NullSoftware.ToolKit
         {
             RaiseEvent(new RoutedEventArgs(BalloonTipClickEvent));
 
-            BalloonTipClickCommand?.Execute(BalloonTipClickCommandParameter);
+            if (BalloonTipClickCommand?.CanExecute(BalloonTipClickCommandParameter) == true)
+            {
+                BalloonTipClickCommand.Execute(BalloonTipClickCommandParameter);
+            }
         }
 
         private void OnNotifyIconBalloonTipShown(object sender, EventArgs e)
@@ -1102,7 +1165,10 @@ namespace NullSoftware.ToolKit
 
             if (e.Button == MouseButtons.Left)
             {
-                ClickCommand?.Execute(ClickCommandParameter);
+                if (ClickCommand?.CanExecute(ClickCommandParameter) == true)
+                {
+                    ClickCommand.Execute(ClickCommandParameter);
+                }
             }
         }
 
@@ -1112,7 +1178,10 @@ namespace NullSoftware.ToolKit
 
             if (e.Button == MouseButtons.Left)
             {
-                DoubleClickCommand?.Execute(DoubleClickCommandParameter);
+                if (DoubleClickCommand?.CanExecute(DoubleClickCommandParameter) == true)
+                {
+                    DoubleClickCommand.Execute(DoubleClickCommandParameter);
+                }
             }
         }
 
