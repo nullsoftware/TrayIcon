@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -36,8 +38,12 @@ namespace NullSoftware.ToolKit
 
 #if !NETCOREAPP3_1_OR_GREATER
         private readonly Dictionary<WPFMenuItem, MenuItem> _menuItemMapping = new Dictionary<WPFMenuItem, MenuItem>();
+        private readonly Dictionary<ItemCollection, NotifyCollectionChangedEventHandler> _menuCollectionHandlers
+            = new Dictionary<ItemCollection, NotifyCollectionChangedEventHandler>();
 #endif
         private readonly Dictionary<WPFMenuItem, ToolStripMenuItem> _toolStripMenuItemMapping = new Dictionary<WPFMenuItem, ToolStripMenuItem>();
+        private readonly Dictionary<ItemCollection, NotifyCollectionChangedEventHandler> _toolStripCollectionHandlers
+            = new Dictionary<ItemCollection, NotifyCollectionChangedEventHandler>();
 
         private ExitEventHandler _applicationExitHandler;
         private Icon _currentIcon;
@@ -799,11 +805,17 @@ namespace NullSoftware.ToolKit
 
         private void DisposeContextMenu()
         {
-            if (NotifyIcon.ContextMenu == null) 
+            if (NotifyIcon.ContextMenu == null)
                 return;
 
             var contextMenu = NotifyIcon.ContextMenu;
             NotifyIcon.ContextMenu = null;
+
+            foreach (var pair in _menuCollectionHandlers.ToList())
+            {
+                ((INotifyCollectionChanged)pair.Key).CollectionChanged -= pair.Value;
+            }
+            _menuCollectionHandlers.Clear();
 
             var keys = _menuItemMapping.Keys.ToList();
             foreach (var item in keys)
@@ -816,14 +828,17 @@ namespace NullSoftware.ToolKit
 
         private ContextMenu GenerateContextMenu(WPFContextMenu original)
         {
-            if (original == null || original.Items.Count == 0)
+            if (original == null)
                 return null;
 
             original.SetBinding(
                 FrameworkElement.DataContextProperty,
                 new WPFBinding(nameof(DataContext)) { Source = this });
 
-            return new ContextMenu(GenerateMenuItems(original.Items));
+            var result = new ContextMenu(GenerateMenuItems(original.Items));
+            SubscribeMenuItemsChanges(original.Items, result.MenuItems);
+
+            return result;
         }
 
         private MenuItem[] GenerateMenuItems(ItemCollection original)
@@ -832,31 +847,37 @@ namespace NullSoftware.ToolKit
 
             foreach (FrameworkElement item in original)
             {
-                switch (item)
-                {
-                    case WPFMenuItem menuItem:
-                        result.Add(LinkMenuItem(menuItem));
-                        break;
-                    case WPFSeparator separator:
-                        result.Add(new MenuItem("-"));
-                        break;
-                    default:
-                        throw new NotSupportedException($"Type '{item.GetType()}' not supported.");
-                }
+                result.Add(CreateMenuItem(item));
             }
 
             return result.ToArray();
         }
 
+        private MenuItem CreateMenuItem(FrameworkElement item)
+        {
+            switch (item)
+            {
+                case WPFMenuItem menuItem:
+                    return LinkMenuItem(menuItem);
+                case WPFSeparator separator:
+                    return new MenuItem("-");
+                default:
+                    throw new NotSupportedException(
+                        $"Type '{item.GetType()}' is not supported as a context menu item. " +
+                        $"Use '{typeof(WPFMenuItem)}' or '{typeof(WPFSeparator)}'. " +
+                        "When binding an ObservableCollection via ItemsSource, the items must already be MenuItem instances.");
+            }
+        }
+
         private MenuItem LinkMenuItem(WPFMenuItem item)
         {
             // if exists return item from cache
-            if (_menuItemMapping.ContainsKey(item)) 
-                return _menuItemMapping[item];
+            if (_menuItemMapping.TryGetValue(item, out var existing))
+                return existing;
 
 
             MenuItem result = new MenuItem(GetHeader(item));
-            
+
             // needed to change menu item header dynamically
             DependencyPropertyDescriptor.FromProperty(
                 WPFMenuItem.HeaderProperty,
@@ -872,36 +893,48 @@ namespace NullSoftware.ToolKit
 
             result.DefaultItem = GetIsDefault(item);
 
-            if (item.Items.Count != 0)
-            {               
-                result.MenuItems.AddRange(GenerateMenuItems(item.Items));
-
-                return result;
-            }
-
-            if (item.IsCheckable)
-            {
-                item.Checked += OnWPFMenuItemChecked;
-                item.Unchecked += OnWPFMenuItemUnchecked;
-
-                result.Checked = item.IsChecked;
-            }
-
-            MenuItemAutomationPeer peer = new MenuItemAutomationPeer(item);
-            IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-
-            result.Tag = invokeProv;
-            result.Click += OnMenuItemClick;
-
-            // cache created menu item
+            // Cache the mapping eagerly so dynamic-children handlers can resolve this menu item
             _menuItemMapping.Add(item, result);
+
+            if (item.Items.Count != 0)
+            {
+                result.MenuItems.AddRange(GenerateMenuItems(item.Items));
+            }
+            else
+            {
+                if (item.IsCheckable)
+                {
+                    item.Checked += OnWPFMenuItemChecked;
+                    item.Unchecked += OnWPFMenuItemUnchecked;
+
+                    result.Checked = item.IsChecked;
+                }
+
+                MenuItemAutomationPeer peer = new MenuItemAutomationPeer(item);
+                IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+
+                result.Tag = invokeProv;
+                result.Click += OnMenuItemClick;
+            }
+
+            // Subscribe to allow dynamic items (e.g. ObservableCollection bound via ItemsSource)
+            SubscribeMenuItemsChanges(item.Items, result.MenuItems);
 
             return result;
         }
 
         private void UnlinkMenuItem(WPFMenuItem item)
         {
-            MenuItem cachedItem = _menuItemMapping[item];
+            if (!_menuItemMapping.TryGetValue(item, out var cachedItem))
+                return;
+
+            // Recursively unlink any descendants we have linked
+            foreach (var child in item.Items.OfType<WPFMenuItem>().ToList())
+            {
+                UnlinkMenuItem(child);
+            }
+
+            UnsubscribeMenuItemsChanges(item.Items);
 
             DependencyPropertyDescriptor.FromProperty(
                 WPFMenuItem.HeaderProperty,
@@ -912,17 +945,145 @@ namespace NullSoftware.ToolKit
 
             item.IsEnabledChanged -= OnWPFMenuItemIsEnabledChanged;
 
-            if (item.IsCheckable)
+            // Click + checkable handlers were only set up for items that initially had no children
+            if (cachedItem.Tag is IInvokeProvider)
             {
-                item.Checked -= OnWPFMenuItemChecked;
-                item.Unchecked -= OnWPFMenuItemUnchecked;
+                if (item.IsCheckable)
+                {
+                    item.Checked -= OnWPFMenuItemChecked;
+                    item.Unchecked -= OnWPFMenuItemUnchecked;
+                }
+
+                cachedItem.Click -= OnMenuItemClick;
             }
 
-            cachedItem.Click -= OnMenuItemClick;
             cachedItem.Tag = null;
             cachedItem.Dispose();
 
             _menuItemMapping.Remove(item);
+        }
+
+        private void SubscribeMenuItemsChanges(ItemCollection wpfItems, Menu.MenuItemCollection menuItems)
+        {
+            if (wpfItems == null || _menuCollectionHandlers.ContainsKey(wpfItems))
+                return;
+
+            NotifyCollectionChangedEventHandler handler = (sender, e) =>
+                OnWpfMenuItemsChanged(wpfItems, menuItems, e);
+
+            ((INotifyCollectionChanged)wpfItems).CollectionChanged += handler;
+            _menuCollectionHandlers[wpfItems] = handler;
+        }
+
+        private void UnsubscribeMenuItemsChanges(ItemCollection wpfItems)
+        {
+            if (wpfItems == null) return;
+
+            if (!_menuCollectionHandlers.TryGetValue(wpfItems, out var handler))
+                return;
+
+            ((INotifyCollectionChanged)wpfItems).CollectionChanged -= handler;
+            _menuCollectionHandlers.Remove(wpfItems);
+        }
+
+        private void OnWpfMenuItemsChanged(
+            ItemCollection wpfItems,
+            Menu.MenuItemCollection menuItems,
+            NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    InsertMenuItems(menuItems, e.NewStartingIndex, e.NewItems);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    RemoveMenuItems(menuItems, e.OldStartingIndex, e.OldItems);
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                    RemoveMenuItems(menuItems, e.OldStartingIndex, e.OldItems);
+                    InsertMenuItems(menuItems, e.NewStartingIndex, e.NewItems);
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    RemoveMenuItems(menuItems, e.OldStartingIndex, e.OldItems);
+                    InsertMenuItems(menuItems, e.NewStartingIndex, e.NewItems);
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    ResetMenuItems(wpfItems, menuItems);
+                    break;
+            }
+        }
+
+        private void InsertMenuItems(Menu.MenuItemCollection menuItems, int startIndex, IList newItems)
+        {
+            if (newItems == null) return;
+
+            if (startIndex < 0)
+                startIndex = menuItems.Count;
+
+            for (int i = 0; i < newItems.Count; i++)
+            {
+                MenuItem mi = CreateMenuItem((FrameworkElement)newItems[i]);
+                menuItems.Add(startIndex + i, mi);
+            }
+        }
+
+        private void RemoveMenuItems(Menu.MenuItemCollection menuItems, int startIndex, IList oldItems)
+        {
+            if (oldItems == null) return;
+
+            for (int i = oldItems.Count - 1; i >= 0; i--)
+            {
+                int index = startIndex + i;
+                if (index < 0 || index >= menuItems.Count)
+                    continue;
+
+                MenuItem mi = menuItems[index];
+                menuItems.RemoveAt(index);
+
+                if (oldItems[i] is WPFMenuItem oldMenuItem)
+                {
+                    UnlinkMenuItem(oldMenuItem);
+                }
+                else
+                {
+                    mi.Dispose();
+                }
+            }
+        }
+
+        private void ResetMenuItems(ItemCollection wpfItems, Menu.MenuItemCollection menuItems)
+        {
+            var snapshot = new List<MenuItem>(menuItems.Count);
+            foreach (MenuItem mi in menuItems)
+                snapshot.Add(mi);
+
+            menuItems.Clear();
+
+            foreach (var mi in snapshot)
+            {
+                WPFMenuItem matched = null;
+                foreach (var pair in _menuItemMapping)
+                {
+                    if (pair.Value == mi)
+                    {
+                        matched = pair.Key;
+                        break;
+                    }
+                }
+
+                if (matched != null)
+                {
+                    UnlinkMenuItem(matched);
+                    continue;
+                }
+
+                mi.Dispose();
+            }
+
+            foreach (FrameworkElement wpfItem in wpfItems)
+            {
+                menuItems.Add(CreateMenuItem(wpfItem));
+            }
         }
 
         private void OnWPFMenuItemHeaderChanged(object sender, EventArgs e)
@@ -970,11 +1131,17 @@ namespace NullSoftware.ToolKit
 
         private void DisposeContextMenuStrip()
         {
-            if (NotifyIcon.ContextMenuStrip == null) 
+            if (NotifyIcon.ContextMenuStrip == null)
                 return;
 
             var contextMenuStrip = NotifyIcon.ContextMenuStrip;
             NotifyIcon.ContextMenuStrip = null;
+
+            foreach (var pair in _toolStripCollectionHandlers.ToList())
+            {
+                ((INotifyCollectionChanged)pair.Key).CollectionChanged -= pair.Value;
+            }
+            _toolStripCollectionHandlers.Clear();
 
             var keys = _toolStripMenuItemMapping.Keys.ToList();
             foreach (var item in keys)
@@ -987,7 +1154,7 @@ namespace NullSoftware.ToolKit
 
         private ContextMenuStrip GenerateContextMenuStrip(WPFContextMenu original)
         {
-            if (original == null || original.Items.Count == 0)
+            if (original == null)
                 return null;
 
             original.SetBinding(
@@ -997,6 +1164,7 @@ namespace NullSoftware.ToolKit
             var result = new ContextMenuStrip();
 
             result.Items.AddRange(GenerateStripMenuItems(original.Items));
+            SubscribeStripItemsChanges(original.Items, result.Items);
             //result.Renderer = new CustomRender.ModernRenderer();
 
             return result;
@@ -1008,27 +1176,33 @@ namespace NullSoftware.ToolKit
 
             foreach (FrameworkElement item in original)
             {
-                switch (item)
-                {
-                    case WPFMenuItem menuItem:
-                        result.Add(LinkStripMenuItem(menuItem));
-                        break;
-                    case WPFSeparator separator:
-                        result.Add(new ToolStripSeparator());
-                        break;
-                    default:
-                        throw new NotSupportedException($"Type '{item.GetType()}' not supported.");
-                }
+                result.Add(CreateStripItem(item));
             }
 
             return result.ToArray();
         }
 
+        private ToolStripItem CreateStripItem(FrameworkElement item)
+        {
+            switch (item)
+            {
+                case WPFMenuItem menuItem:
+                    return LinkStripMenuItem(menuItem);
+                case WPFSeparator separator:
+                    return new ToolStripSeparator();
+                default:
+                    throw new NotSupportedException(
+                        $"Type '{item.GetType()}' is not supported as a context menu item. " +
+                        $"Use '{typeof(WPFMenuItem)}' or '{typeof(WPFSeparator)}'. " +
+                        "When binding an ObservableCollection via ItemsSource, the items must already be MenuItem instances.");
+            }
+        }
+
         private ToolStripMenuItem LinkStripMenuItem(WPFMenuItem item)
         {
             // if exists return item from cache
-            if (_toolStripMenuItemMapping.ContainsKey(item)) 
-                return _toolStripMenuItemMapping[item];
+            if (_toolStripMenuItemMapping.TryGetValue(item, out var existing))
+                return existing;
 
 
             ToolStripMenuItem result = new ToolStripMenuItem(GetHeader(item));
@@ -1046,35 +1220,48 @@ namespace NullSoftware.ToolKit
             result.Enabled = item.IsEnabled;
             item.IsEnabledChanged += OnStripWPFMenuItemIsEnabledChanged;
 
+            // Cache the mapping eagerly so dynamic-children handlers can resolve this strip item
+            _toolStripMenuItemMapping.Add(item, result);
+
             if (item.Items.Count != 0)
             {
                 result.DropDownItems.AddRange(GenerateStripMenuItems(item.Items));
-
-                return result;
             }
-
-            if (item.IsCheckable)
+            else
             {
-                item.Checked += OnStripWPFMenuItemChecked;
-                item.Unchecked += OnStripWPFMenuItemUnchecked;
+                if (item.IsCheckable)
+                {
+                    item.Checked += OnStripWPFMenuItemChecked;
+                    item.Unchecked += OnStripWPFMenuItemUnchecked;
 
-                result.Checked = item.IsChecked;
+                    result.Checked = item.IsChecked;
+                }
+
+                MenuItemAutomationPeer peer = new MenuItemAutomationPeer(item);
+                IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+
+                result.Tag = invokeProv;
+                result.Click += OnToolStripMenuItemClick;
             }
 
-            MenuItemAutomationPeer peer = new MenuItemAutomationPeer(item);
-            IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-
-            result.Tag = invokeProv;
-            result.Click += OnToolStripMenuItemClick;
-
-            _toolStripMenuItemMapping.Add(item, result);
+            // Subscribe to allow dynamic items (e.g. ObservableCollection bound via ItemsSource)
+            SubscribeStripItemsChanges(item.Items, result.DropDownItems);
 
             return result;
         }
 
         private void UnlinkStripMenuItem(WPFMenuItem item)
         {
-            ToolStripMenuItem cachedItem = _toolStripMenuItemMapping[item];
+            if (!_toolStripMenuItemMapping.TryGetValue(item, out var cachedItem))
+                return;
+
+            // Recursively unlink any descendants we have linked
+            foreach (var child in item.Items.OfType<WPFMenuItem>().ToList())
+            {
+                UnlinkStripMenuItem(child);
+            }
+
+            UnsubscribeStripItemsChanges(item.Items);
 
             DependencyPropertyDescriptor.FromProperty(
                 WPFMenuItem.HeaderProperty,
@@ -1085,17 +1272,149 @@ namespace NullSoftware.ToolKit
 
             item.IsEnabledChanged -= OnStripWPFMenuItemIsEnabledChanged;
 
-            if (item.IsCheckable)
+            // Click + checkable handlers were only set up for items that initially had no children
+            if (cachedItem.Tag is IInvokeProvider)
             {
-                item.Checked -= OnStripWPFMenuItemChecked;
-                item.Unchecked -= OnStripWPFMenuItemUnchecked;
+                if (item.IsCheckable)
+                {
+                    item.Checked -= OnStripWPFMenuItemChecked;
+                    item.Unchecked -= OnStripWPFMenuItemUnchecked;
+                }
+
+                cachedItem.Click -= OnToolStripMenuItemClick;
             }
 
-            cachedItem.Click -= OnToolStripMenuItemClick;
             cachedItem.Tag = null;
             cachedItem.Dispose();
 
             _toolStripMenuItemMapping.Remove(item);
+        }
+
+        private void SubscribeStripItemsChanges(ItemCollection wpfItems, ToolStripItemCollection stripItems)
+        {
+            if (wpfItems == null || _toolStripCollectionHandlers.ContainsKey(wpfItems))
+                return;
+
+            NotifyCollectionChangedEventHandler handler = (sender, e) =>
+                OnStripWpfItemsChanged(wpfItems, stripItems, e);
+
+            ((INotifyCollectionChanged)wpfItems).CollectionChanged += handler;
+            _toolStripCollectionHandlers[wpfItems] = handler;
+        }
+
+        private void UnsubscribeStripItemsChanges(ItemCollection wpfItems)
+        {
+            if (wpfItems == null) return;
+
+            if (!_toolStripCollectionHandlers.TryGetValue(wpfItems, out var handler))
+                return;
+
+            ((INotifyCollectionChanged)wpfItems).CollectionChanged -= handler;
+            _toolStripCollectionHandlers.Remove(wpfItems);
+        }
+
+        private void OnStripWpfItemsChanged(
+            ItemCollection wpfItems,
+            ToolStripItemCollection stripItems,
+            NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    InsertStripItems(stripItems, e.NewStartingIndex, e.NewItems);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    RemoveStripItems(stripItems, e.OldStartingIndex, e.OldItems);
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                    RemoveStripItems(stripItems, e.OldStartingIndex, e.OldItems);
+                    InsertStripItems(stripItems, e.NewStartingIndex, e.NewItems);
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    // ToolStripItemCollection has no Move; emulate as remove + insert
+                    RemoveStripItems(stripItems, e.OldStartingIndex, e.OldItems);
+                    InsertStripItems(stripItems, e.NewStartingIndex, e.NewItems);
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    ResetStripItems(wpfItems, stripItems);
+                    break;
+            }
+        }
+
+        private void InsertStripItems(ToolStripItemCollection stripItems, int startIndex, IList newItems)
+        {
+            if (newItems == null) return;
+
+            if (startIndex < 0)
+                startIndex = stripItems.Count;
+
+            for (int i = 0; i < newItems.Count; i++)
+            {
+                ToolStripItem stripItem = CreateStripItem((FrameworkElement)newItems[i]);
+                stripItems.Insert(startIndex + i, stripItem);
+            }
+        }
+
+        private void RemoveStripItems(ToolStripItemCollection stripItems, int startIndex, IList oldItems)
+        {
+            if (oldItems == null) return;
+
+            for (int i = oldItems.Count - 1; i >= 0; i--)
+            {
+                int stripIndex = startIndex + i;
+                if (stripIndex < 0 || stripIndex >= stripItems.Count)
+                    continue;
+
+                ToolStripItem stripItem = stripItems[stripIndex];
+                stripItems.RemoveAt(stripIndex);
+
+                if (oldItems[i] is WPFMenuItem oldMenuItem)
+                {
+                    UnlinkStripMenuItem(oldMenuItem);
+                }
+                else
+                {
+                    stripItem.Dispose();
+                }
+            }
+        }
+
+        private void ResetStripItems(ItemCollection wpfItems, ToolStripItemCollection stripItems)
+        {
+            var snapshot = new List<ToolStripItem>(stripItems.Count);
+            foreach (ToolStripItem ti in stripItems)
+                snapshot.Add(ti);
+
+            stripItems.Clear();
+
+            foreach (var ti in snapshot)
+            {
+                if (ti is ToolStripMenuItem tsmi)
+                {
+                    WPFMenuItem matched = null;
+                    foreach (var pair in _toolStripMenuItemMapping)
+                    {
+                        if (pair.Value == tsmi)
+                        {
+                            matched = pair.Key;
+                            break;
+                        }
+                    }
+
+                    if (matched != null)
+                    {
+                        UnlinkStripMenuItem(matched);
+                        continue;
+                    }
+                }
+
+                ti.Dispose();
+            }
+
+            foreach (FrameworkElement wpfItem in wpfItems)
+            {
+                stripItems.Add(CreateStripItem(wpfItem));
+            }
         }
 
         private void OnStripWPFMenuItemHeaderChanged(object sender, EventArgs e)

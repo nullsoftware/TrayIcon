@@ -69,7 +69,31 @@ It injects `INotificationService` to specified DataContext property.
 To support latest .NET versions was added `ContextMenuVariation` property to `TrayIcon`.\
 It allows to switch beetwen `System.Windows.Forms.ContextMenu` or `System.Windows.Forms.ContextMenuStrip`.\
 **Warning:** .NET Core 3.1 and later versions don't support `System.Windows.Forms.ContextMenu`.
-See more at the [documentation page](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.contextmenu). 
+See more at the [documentation page](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.contextmenu).
+
+### Dynamic context menu items
+Any `MenuItem` (or the root `ContextMenu`) can have its children built from an `ObservableCollection<MenuItem>` bound through `ItemsSource`. Adds, removes, replaces, moves and `Clear()` (`Reset`) are forwarded to the underlying tray menu — no need to rebuild the menu manually.
+
+XAML:
+```XAML
+<MenuItem Header="Recent Files" ItemsSource="{Binding RecentFiles}"/>
+```
+
+ViewModel:
+```C#
+public ObservableCollection<MenuItem> RecentFiles { get; } = new ObservableCollection<MenuItem>();
+
+private void RegisterRecent(string path)
+{
+    RecentFiles.Add(new MenuItem
+    {
+        Header = path,
+        Command = new RelayCommand(() => Process.Start(path)),
+    });
+}
+```
+
+The items in the bound collection must be `System.Windows.Controls.MenuItem` (or `Separator`) instances. Direct mutation of `MenuItem.Items` from code-behind is also supported.
 
 ## Full Example
 ```XAML

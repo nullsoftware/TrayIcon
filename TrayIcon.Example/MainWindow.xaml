@@ -37,6 +37,9 @@
                         <MenuItem Header="Say Hello" Command="{Binding SayHelloCommand}" icon:TrayIcon.IsDefault="True"/>
                     </MenuItem>
                     <Separator/>
+                    <!--Dynamic items: ItemsSource bound to ObservableCollection<MenuItem>-->
+                    <MenuItem Header="Recent Files" ItemsSource="{Binding RecentFiles}"/>
+                    <Separator/>
                     <MenuItem Header="_Silent Mode" IsCheckable="True" IsChecked="{Binding IsSilentModeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Separator/>
                     <MenuItem Header="E_xit" Command="{Binding CloseCommand}"/>
@@ -64,12 +67,20 @@
                     </ContextMenu>
                 </Button.ContextMenu>
             </Button>
-            <Label VerticalAlignment="Center" 
+            <Label VerticalAlignment="Center"
                    Content="Variation:"/>
-            <ComboBox Width="160" 
+            <ComboBox Width="160"
                       VerticalAlignment="Center"
-                      ItemsSource="{Binding Source={StaticResource ContextMenuVariations}}" 
+                      ItemsSource="{Binding Source={StaticResource ContextMenuVariations}}"
                       SelectedItem="{Binding ElementName=MainTrayIcon, Path=ContextMenuVariation, Mode=TwoWay}" />
+            <Button Margin="20, 0, 0, 0"
+                    Padding="10, 3"
+                    Command="{Binding AddRecentFileCommand}"
+                    Content="Add Recent"/>
+            <Button Margin="6, 0, 0, 0"
+                    Padding="10, 3"
+                    Command="{Binding ClearRecentFilesCommand}"
+                    Content="Clear Recent"/>
         </StackPanel>
     </Grid>
 </Window>
