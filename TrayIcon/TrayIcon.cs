@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -1216,8 +1217,13 @@ namespace NullSoftware.ToolKit
                 WPFMenuItem.VisibilityProperty,
                 typeof(WPFMenuItem)).AddValueChanged(item, OnStripWPFMenuItemVisibilityChanged);
 
+            DependencyPropertyDescriptor.FromProperty(
+                WPFMenuItem.IconProperty,
+                typeof(WPFMenuItem)).AddValueChanged(item, OnStripWPFMenuItemIconChanged);
+
             result.Visible = item.Visibility == Visibility.Visible;
             result.Enabled = item.IsEnabled;
+            result.Image = ConvertWpfIconToImage(item.Icon);
             item.IsEnabledChanged += OnStripWPFMenuItemIsEnabledChanged;
 
             // Cache the mapping eagerly so dynamic-children handlers can resolve this strip item
@@ -1269,6 +1275,9 @@ namespace NullSoftware.ToolKit
             DependencyPropertyDescriptor.FromProperty(
                 WPFMenuItem.VisibilityProperty,
                 typeof(WPFMenuItem)).RemoveValueChanged(item, OnStripWPFMenuItemVisibilityChanged);
+            DependencyPropertyDescriptor.FromProperty(
+                WPFMenuItem.IconProperty,
+                typeof(WPFMenuItem)).RemoveValueChanged(item, OnStripWPFMenuItemIconChanged);
 
             item.IsEnabledChanged -= OnStripWPFMenuItemIsEnabledChanged;
 
@@ -1283,6 +1292,10 @@ namespace NullSoftware.ToolKit
 
                 cachedItem.Click -= OnToolStripMenuItemClick;
             }
+
+            var existingImage = cachedItem.Image;
+            cachedItem.Image = null;
+            existingImage?.Dispose();
 
             cachedItem.Tag = null;
             cachedItem.Dispose();
@@ -1435,6 +1448,15 @@ namespace NullSoftware.ToolKit
             _toolStripMenuItemMapping[item].Enabled = (bool)e.NewValue;
         }
 
+        private void OnStripWPFMenuItemIconChanged(object sender, EventArgs e)
+        {
+            var item = (WPFMenuItem)sender;
+            var stripItem = _toolStripMenuItemMapping[item];
+            var oldImage = stripItem.Image;
+            stripItem.Image = ConvertWpfIconToImage(item.Icon);
+            oldImage?.Dispose();
+        }
+
         private void OnStripWPFMenuItemChecked(object sender, RoutedEventArgs e)
         {
             var item = (WPFMenuItem)sender;
@@ -1452,6 +1474,73 @@ namespace NullSoftware.ToolKit
             var item = (ToolStripMenuItem)sender;
             IInvokeProvider invokeProv = (IInvokeProvider)item.Tag;
             invokeProv.Invoke();
+        }
+
+        private static System.Drawing.Image ConvertWpfIconToImage(object icon)
+        {
+            if (icon == null)
+                return null;
+
+            BitmapSource source = null;
+
+            switch (icon)
+            {
+                case BitmapSource bs:
+                    source = bs;
+                    break;
+                case System.Windows.Controls.Image wpfImage when wpfImage.Source is BitmapSource imgSrc:
+                    source = imgSrc;
+                    break;
+                case System.Windows.Controls.Image wpfImage when wpfImage.Source != null:
+                    source = RenderImageSourceToBitmapSource(wpfImage.Source);
+                    break;
+                case ImageSource imgSource:
+                    source = RenderImageSourceToBitmapSource(imgSource);
+                    break;
+            }
+
+            if (source == null)
+                return null;
+
+            try
+            {
+                using (var ms = new MemoryStream())
+                {
+                    var encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(source));
+                    encoder.Save(ms);
+                    ms.Position = 0;
+
+                    // Copy into an independent Bitmap so the MemoryStream can be released safely.
+                    using (var loaded = new System.Drawing.Bitmap(ms))
+                    {
+                        return new System.Drawing.Bitmap(loaded);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to convert WPF MenuItem.Icon to a WinForms image. Exception: {ex}");
+                return null;
+            }
+        }
+
+        private static BitmapSource RenderImageSourceToBitmapSource(ImageSource imgSource)
+        {
+            const int size = 16;
+
+            var wrapper = new System.Windows.Controls.Image
+            {
+                Source = imgSource,
+                Stretch = System.Windows.Media.Stretch.Uniform,
+            };
+
+            wrapper.Measure(new System.Windows.Size(size, size));
+            wrapper.Arrange(new System.Windows.Rect(0, 0, size, size));
+
+            var rtb = new RenderTargetBitmap(size, size, 96, 96, PixelFormats.Pbgra32);
+            rtb.Render(wrapper);
+            return rtb;
         }
 
 

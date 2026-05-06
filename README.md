@@ -95,6 +95,21 @@ private void RegisterRecent(string path)
 
 The items in the bound collection must be `System.Windows.Controls.MenuItem` (or `Separator`) instances. Direct mutation of `MenuItem.Items` from code-behind is also supported.
 
+### Menu item icons
+WPF `MenuItem.Icon` is forwarded to `ToolStripMenuItem.Image` automatically. Both static and bound icons are supported, and changes update live.
+
+```XAML
+<MenuItem Header="Open">
+    <MenuItem.Icon>
+        <Image Source="open.png"/>
+    </MenuItem.Icon>
+</MenuItem>
+```
+
+Accepted `Icon` values: a `BitmapSource`, an `Image` element with any `ImageSource` (the typical XAML form above), or any other `ImageSource` such as `DrawingImage` — non-bitmap sources are rendered to a 16×16 PNG.
+
+**Warning:** icons are only rendered when `ContextMenuVariation` is `ContextMenuStrip` (the default on .NET Core 3.0+). The legacy `System.Windows.Forms.MenuItem` used by `ContextMenuVariation.ContextMenu` has no icon property.
+
 ## Full Example
 ```XAML
 <Window x:Class="TrayIcon.Example.MainWindow"

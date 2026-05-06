@@ -4,8 +4,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using NullSoftware.ToolKit;
 using PropertyChanged;
 
@@ -45,6 +47,9 @@ namespace Example.ViewModels
             ClearRecentFilesCommand = new RelayCommand(() => RecentFiles.Clear());
         }
 
+        private static readonly BitmapImage RecentFileIcon =
+            new BitmapImage(new Uri("pack://application:,,,/Images/Globe_16x16.png"));
+
         private void AddRecentFile()
         {
             string path = $"C:\\Files\\file_{DateTime.Now:HH-mm-ss-fff}.txt";
@@ -56,6 +61,7 @@ namespace Example.ViewModels
             {
                 Header = path,
                 Command = openCommand,
+                Icon = new Image { Source = RecentFileIcon },
             });
         }
     }

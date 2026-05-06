@@ -34,6 +34,9 @@
                 <!--This context menu will be converted to System.Windows.Forms.ContextMenu-->
                 <ContextMenu>
                     <MenuItem Header="Notify">
+                        <MenuItem.Icon>
+                            <Image Source="Images/Globe_16x16.png" />
+                        </MenuItem.Icon>
                         <MenuItem Header="Say Hello" Command="{Binding SayHelloCommand}" icon:TrayIcon.IsDefault="True"/>
                     </MenuItem>
                     <Separator/>
